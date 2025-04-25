@@ -45,7 +45,8 @@ def run_app(name):
     print(f"Hello {name}")
     while True:
         msg_user = input("Введите сообщение: (:q for exit, :h for help) ")
-        splited = msg_user.split(" ")
+        splited = msg_user.split(" ") 
+        # сообщение юзера разбитое на список
         if command(splited, ":q"):
             print(f"GG WP")
             break
@@ -66,35 +67,38 @@ def run_app(name):
             replies(macan_list)
             print(f"Нагибатор228: {result_msg}")
 
-def command(msg, com):
-    return com.casefold() in msg[0].casefold()
+def command(splited, com):
+    return com.casefold() in splited[0].casefold()
 
-def run_list_users(list):
+def run_list_users(splited):
     """
     run_list_users(Список)
     Если передается :l - весь список пользователей
     Если :l <str> - ищутся пользователи, которые начинаются на <str>
     """
-    if len(list) == 1:
+    if len(splited) == 1:
             num = 0
             for i in account_list:
                 num += 1
                 print(f"{num}. {i}")
     else:
-        res_search = []
-        for i in account_list:
-            if i.casefold().startswith(list[1].casefold()):
-                res_search.append(i)
+        res_search = list(filter(lambda i: i.casefold().startswith(splited[1].casefold()), account_list))
+        """
+        переписал используя filter(под влиянием хаскеля)
+        """
+        # for i in account_list:
+        #     if i.casefold().startswith(list[1].casefold()):
+        #         res_search.append(i)
         if len(res_search) == 0:
             print("Никого не найдено")
         else:
             print(", ".join(res_search))
 
-def replies(list):
+def replies(splited):
     len_sentense = rnd.randint(1,12)   
     reply_msg = []
     for i in range(len_sentense):
-        reply_msg.append(rnd.choice(list))
+        reply_msg.append(rnd.choice(splited))
     global result_msg 
     result_msg = " ".join(reply_msg)
     return result_msg
