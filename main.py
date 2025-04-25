@@ -1,4 +1,4 @@
-account_list = ["Yarik","Angel", "dsa"]
+account_list = ["Yarik","Angel", "dsa", "Yana"]
 
 def main(): 
     """
@@ -44,25 +44,48 @@ def run_app(name):
     while True:
         msg_user = input("Введите сообщение: (:q for exit, :h for help) ")
         splited = msg_user.split(" ")
-        if splited[0] == ":q":
-            print("GG WP")
+        if command(splited, ":q"):
+            print(f"GG WP")
             break
-        elif splited[0] == ":h":
+        elif command(splited, ":h"):
             run_help()
-        elif ":r" in splited[0]:
+        elif command(splited, ":r"):
             splited = " ".join(splited[1::])
             print(splited[::-1])
-        elif splited[0] == ":c":
+        elif command(splited, ":c"):
             print(int(splited[1]) + int(splited[2]))
+        elif command(splited, ":l"):
+            if len(splited) == 1:
+                num = 0
+                for i in account_list:
+                    num += 1
+                    print(f"{num}. {i}")
+            else:
+                num = 0
+                for i in account_list:
+                    if i.casefold().startswith(splited[1].casefold()):
+                        print(i)
+                    else:
+                        print("Не найдены такие челы")
+                        break
         else:
             print(f"{name}: {msg_user}")
+
+def command(msg, com):
+    if com.casefold() in msg[0].casefold():
+        return True
+    else:
+        return False
+        
 
 def run_help():
     print("""
             :q - выход
             :h - помощь
             :r <msg> - перевернутое сообщение 
-            :c <a> <b> to a + b     
+            :c <a> <b> - a + b     
+            :l - вывод всех полььзователей
+            :l <Строка> - поиск пользователей по свопадению
             """)
     
 main()
