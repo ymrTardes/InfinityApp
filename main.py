@@ -16,7 +16,6 @@ def main():
         else:
             print("ты в ZaLoop, введите заново")
             
-
 def check_age(a):
     if a > 17:
         return True
@@ -77,7 +76,6 @@ def command(msg, com):
     else:
         return False
         
-
 def run_help():
     print("""
             :q - выход
