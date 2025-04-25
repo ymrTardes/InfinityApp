@@ -19,11 +19,13 @@ def main():
         else:
             print("ты в ZaLoop, введите заново")
 
+
 def check_age(a):
     """
     return вернет итак True или False, нет смысла в конструкции if else
     """
     return a > 17
+
 
 def run_registration():
     name_inp = input("Введи имя заебал: ")
@@ -34,12 +36,14 @@ def run_registration():
     else:
         print("Маленький еще")
 
+
 def run_login():
     name_inp = input("Введи кличку заебал: ")
     if name_inp in account_list:
         run_app(name_inp)
     else:
         print("Зарегайся")
+
 
 def run_app(name):
     print(f"Hello {name}")
@@ -66,8 +70,10 @@ def run_app(name):
             print(f"{name}: {msg_user}")
             print(f"Нагибатор228: {replies()}")
 
+
 def command(splited, com):
     return com.casefold() in splited[0].casefold()
+
 
 def run_list_users(splited):
     """
@@ -93,11 +99,13 @@ def run_list_users(splited):
         else:
             print(", ".join(res_search))
 
+
 def replies():
     reply_msg = []
     for i in range(rnd.randint(1,12)):
         reply_msg.append(rnd.choice(macan_list))
     return " ".join(reply_msg)
+
 
 def run_help():
     print("""
@@ -108,6 +116,7 @@ def run_help():
             :l - вывод всех полььзователей
             :l <Строка> - поиск пользователей по свопадению
             """)
+
 
 if __name__ == "__main__":
     main()
