@@ -101,4 +101,4 @@ Ice занижает градус в роксе, а-я
 
 """
 
-macan_list = macan.split(" ")
+macan_list = macan.split("\n")

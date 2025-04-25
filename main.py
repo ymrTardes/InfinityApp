@@ -3,7 +3,7 @@ from words import *
 
 account_list = ["Yarik","Angel", "dsa", "Yana"]
 
-def main(): 
+def main():
     """
     Функция main() запускается при старте
     """  
@@ -18,13 +18,13 @@ def main():
             break
         else:
             print("ты в ZaLoop, введите заново")
-            
+
 def check_age(a):
     """
     return вернет итак True или False, нет смысла в конструкции if else
     """
     return a > 17
-    
+
 def run_registration():
     name_inp = input("Введи имя заебал: ")
     age_inp = int(input("Скок по земле ходишь епта: "))
@@ -39,13 +39,13 @@ def run_login():
     if name_inp in account_list:
         run_app(name_inp)
     else:
-        print("Зарегайся")     
+        print("Зарегайся")
 
 def run_app(name):
     print(f"Hello {name}")
     while True:
         msg_user = input("Введите сообщение: (:q for exit, :h for help) ")
-        splited = msg_user.split(" ") 
+        splited = msg_user.split(" ")
         # сообщение юзера разбитое на список
         if command(splited, ":q"):
             print(f"GG WP")
@@ -64,7 +64,7 @@ def run_app(name):
             run_list_users(splited)
         else:
             print(f"{name}: {msg_user}")
-            print(f"Нагибатор228: {replies(macan_list)}")
+            print(f"Нагибатор228: {replies()}")
 
 def command(splited, com):
     return com.casefold() in splited[0].casefold()
@@ -93,11 +93,10 @@ def run_list_users(splited):
         else:
             print(", ".join(res_search))
 
-def replies(splited):
-    len_sentense = rnd.randint(1,12)   
+def replies():
     reply_msg = []
-    for i in range(len_sentense):
-        reply_msg.append(rnd.choice(splited))
+    for i in range(rnd.randint(1,12)):
+        reply_msg.append(rnd.choice(macan_list))
     return " ".join(reply_msg)
 
 def run_help():
