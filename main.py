@@ -54,19 +54,7 @@ def run_app(name):
         elif command(splited, ":c"):
             print(int(splited[1]) + int(splited[2]))
         elif command(splited, ":l"):
-            if len(splited) == 1:
-                num = 0
-                for i in account_list:
-                    num += 1
-                    print(f"{num}. {i}")
-            else:
-                num = 0
-                for i in account_list:
-                    if i.casefold().startswith(splited[1].casefold()):
-                        print(i)
-                    else:
-                        print("Не найдены такие челы")
-                        break
+            run_list_users(splited)
         else:
             print(f"{name}: {msg_user}")
 
@@ -75,7 +63,29 @@ def command(msg, com):
         return True
     else:
         return False
-        
+
+def run_list_users(list):
+    """
+    run_list_users(Список)
+    Если передается :l - весь список пользователей
+    Если :l <str> - ищутся пользователи, которые начинаются на <str>
+    """
+    if len(list) == 1:
+            num = 0
+            for i in account_list:
+                num += 1
+                print(f"{num}. {i}")
+    else:
+        num = 0
+        res_search = []
+        for i in account_list:
+            if i.casefold().startswith(list[1].casefold()):
+                res_search.append(i)
+        if len(res_search) == 0:
+            print("Никого не найдено")
+        else:
+            print(", ".join(res_search))
+                     
 def run_help():
     print("""
             :q - выход
