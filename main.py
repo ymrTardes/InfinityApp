@@ -1,5 +1,6 @@
 import random as rnd
 from words import *
+
 account_list = ["Yarik","Angel", "dsa", "Yana"]
 
 def main(): 
@@ -51,6 +52,9 @@ def run_app(name):
         elif command(splited, ":h"):
             run_help()
         elif command(splited, ":r"):
+            """
+            инвертированное сообщение
+            """
             splited = " ".join(splited[1::])
             print(splited[::-1])
         elif command(splited, ":c"):
@@ -64,7 +68,6 @@ def run_app(name):
 
 def command(msg, com):
     return com.casefold() in msg[0].casefold()
-
 
 def run_list_users(list):
     """
@@ -95,7 +98,6 @@ def replies(list):
     global result_msg 
     result_msg = " ".join(reply_msg)
     return result_msg
-
 
 def run_help():
     print("""
