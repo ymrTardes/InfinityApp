@@ -76,7 +76,6 @@ def run_list_users(list):
                 num += 1
                 print(f"{num}. {i}")
     else:
-        num = 0
         res_search = []
         for i in account_list:
             if i.casefold().startswith(list[1].casefold()):
