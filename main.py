@@ -1,3 +1,5 @@
+import random as rnd
+from words import *
 account_list = ["Yarik","Angel", "dsa", "Yana"]
 
 def main(): 
@@ -17,10 +19,10 @@ def main():
             print("ты в ZaLoop, введите заново")
             
 def check_age(a):
-    if a > 17:
-        return True
-    else:
-        return False
+    """
+    return вернет итак True или False, нет смысла в конструкции if else
+    """
+    return a > 17
     
 def run_registration():
     name_inp = input("Введи имя заебал: ")
@@ -57,12 +59,12 @@ def run_app(name):
             run_list_users(splited)
         else:
             print(f"{name}: {msg_user}")
+            replies(macan_list)
+            print(f"Нагибатор228: {result_msg}")
 
 def command(msg, com):
-    if com.casefold() in msg[0].casefold():
-        return True
-    else:
-        return False
+    return com.casefold() in msg[0].casefold()
+
 
 def run_list_users(list):
     """
@@ -84,7 +86,17 @@ def run_list_users(list):
             print("Никого не найдено")
         else:
             print(", ".join(res_search))
-                     
+
+def replies(list):
+    len_sentense = rnd.randint(1,12)   
+    reply_msg = []
+    for i in range(len_sentense):
+        reply_msg.append(rnd.choice(list))
+    global result_msg 
+    result_msg = " ".join(reply_msg)
+    return result_msg
+
+
 def run_help():
     print("""
             :q - выход
@@ -94,5 +106,6 @@ def run_help():
             :l - вывод всех полььзователей
             :l <Строка> - поиск пользователей по свопадению
             """)
-    
-main()
+
+if __name__ == "__main__":
+    main()
