@@ -64,8 +64,7 @@ def run_app(name):
             run_list_users(splited)
         else:
             print(f"{name}: {msg_user}")
-            replies(macan_list)
-            print(f"Нагибатор228: {result_msg}")
+            print(f"Нагибатор228: {replies(macan_list)}")
 
 def command(splited, com):
     return com.casefold() in splited[0].casefold()
@@ -99,9 +98,7 @@ def replies(splited):
     reply_msg = []
     for i in range(len_sentense):
         reply_msg.append(rnd.choice(splited))
-    global result_msg 
-    result_msg = " ".join(reply_msg)
-    return result_msg
+    return " ".join(reply_msg)
 
 def run_help():
     print("""
@@ -115,3 +112,4 @@ def run_help():
 
 if __name__ == "__main__":
     main()
+    # бля такой долбаеб писал код конечно
