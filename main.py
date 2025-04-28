@@ -1,52 +1,96 @@
 import random as rnd
 from words import *
 
-account_list = ["Yarik","Angel", "dsa", "Yana"]
+# account_list = ["Yarik","Angel", "dsa", "Yana"]
+path_bd = "data/users.txt"
+class DataUser:
+    def __init__(self, name, age): # Конструктор
+        """
+        self - ссылка на экземпляр класса
+        """
+        self.name = name # Свойство объекта или параметр
+        self.age = age
+        self.bio = "BIO undefinded"
+    def set_bio(self, bio: str):
+        self.bio = bio
 
 def main():
     """
     Функция main() запускается при старте
-    """  
+    """
     print("Hello World")
+    # test = [DataUser("Yarik", 21), DataUser("dsa", 22)]
+    with open(path_bd, "r") as file:
+        users_lines = file.read()
+        users_lines = users_lines.split("\n")
+        users_lines = list(map(lambda x: x.split(";"), users_lines))
+        # ДРУГОЙ ВАРИАНТ
+        # for i in users_lines:
+        #     account_list.append(i.split(";"))
+        account_list = []
+        try:
+            for usr in users_lines:
+                user_atrib = DataUser(usr[0].strip(), usr[1].strip())
+                user_atrib.set_bio(usr[2].strip())
+                account_list.append(user_atrib)
+        except:
+            print("Проверь БД на лишний Энтер)))))")
+
     while True:
         auth = input("Register/Login: R/L? ")
         if auth.upper() == "R": 
-            run_registration()
+            run_registration(account_list)
             break
         elif auth.upper() == "L":
-            run_login()
+            run_login(account_list)
             break
         else:
             print("ты в ZaLoop, введите заново")
 
 
-def check_age(a):
+def check_age(a: int):
     """
     return вернет итак True или False, нет смысла в конструкции if else
     """
     return a > 17
 
 
-def run_registration():
-    name_inp = input("Введи имя заебал: ")
-    age_inp = int(input("Скок по земле ходишь епта: "))
-    if check_age(age_inp):
-        print("Регистрация прошла заебок")
-        run_app(name_inp)
+def get_inp(query_msg):
+    return input(query_msg).strip() # strip уберает лишние пробелы по умолчанию
+
+
+def run_registration(account_list):
+    name_inp = get_inp("Назовись: ")
+    find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
+    if len(find_user) > 0:
+        print("Уже есть такой педик")
     else:
-        print("Маленький еще")
+        age_inp = int(get_inp("Скок по земле ходишь епта: "))
+        if check_age(age_inp):
+            print("Регистрация прошла заебок")
+            with open(path_bd, "a") as file:
+                file.write(f"\n{name_inp}; {age_inp};")
+            run_app(account_list, DataUser(name_inp, age_inp))
+        else:
+            print("Маленький еще")
 
 
-def run_login():
-    name_inp = input("Введи кличку заебал: ")
-    if name_inp in account_list:
-        run_app(name_inp)
+def run_login(account_list):
+    name_inp = get_inp("Введи имя заебал: ")
+    find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
+    if len(find_user) != 0:
+        return run_app(account_list, find_user[0])
     else:
-        print("Зарегайся")
+        print("Пользователь не найден")
+    # for i in account_list:
+    #     if i.name == name_inp:
+    #         return run_app(account_list, i)
+    # else:
+    #     print("Пользователь не найден")
 
 
-def run_app(name):
-    print(f"Hello {name}")
+def run_app(account_list, user):
+    print(f"Hello {user.name}")
     while True:
         msg_user = input("Введите сообщение: (:q for exit, :h for help) ")
         split_message = msg_user.split(" ")
@@ -55,7 +99,7 @@ def run_app(name):
             print(f"GG WP")
             break
         elif command(split_message, ":h"):
-            run_help()
+            print(out_help())
         elif command(split_message, ":r"):
             """
             инвертированное сообщение
@@ -65,27 +109,34 @@ def run_app(name):
         elif command(split_message, ":c"):
             print(int(split_message[1]) + int(split_message[2]))
         elif command(split_message, ":l"):
-            run_list_users(split_message)
+            run_list_users(split_message, account_list)
+        elif command(split_message, ":i"):
+            print(f"Me >>> {user.name}, {user.age}, {user.bio}")
         else:
-            print(f"{name}: {msg_user}")
-            print(f"Нагибатор228: {replies()}")
+            print(f"{user.name} >>> {msg_user}")
+            print(f"Нагибатор228 >>> {replies()}")
 
 
-def command(split_message, com):
+def command(split_message: list, com: str):
+    """
+        принимает сообщение разделенное на список, и команду вторым аргументом
+        возвращает bool (T/F)
+        есть ли команда в сообщении от пользователя
+    """
     return com.casefold() in split_message[0].casefold()
 
 
-def run_list_users(split_message):
+def run_list_users(split_message, account_list):
     """
     run_list_users(Список)
     Если передается :l - весь список пользователей
     Если :l <str> - ищутся пользователи, которые начинаются на <str>
     """
     if len(split_message) == 1:
-            num = 0
+            ord = 0
             for i in account_list:
-                num += 1
-                print(f"{num}. {i}")
+                ord += 1
+                print(f"{ord}. {i.name}, {i.age}, {i.bio}")
     else:
         res_search = list(filter(lambda i: i.casefold().startswith(split_message[1].casefold()), account_list))
         """
@@ -107,16 +158,18 @@ def replies():
     return " ".join(reply_msg)
 
 
-def run_help():
-    help_text = """
-            :q - выход
-            :h - помощь
-            :r <msg> - перевернутое сообщение 
-            :c <a> <b> - a + b     
-            :l - вывод всех полььзователей
-            :l <Строка> - поиск пользователей по свопадению
-            """
-    print(help_text)
+help_text = [
+          ":q - выход"
+        , ":h - помощь"
+        , ":r <msg> - перевернутое сообщение"
+        , ":c <a> <b> - a + b"
+        , ":l - вывод всех полььзователей"
+        , ":l <Строка> - поиск пользователей по свопадению"
+        ]
+
+
+def out_help():
+    return "\n".join(help_text)
 
 
 if __name__ == "__main__":

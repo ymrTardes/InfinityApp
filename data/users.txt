@@ -1,0 +1,6 @@
+Yarik;23;chert
+Andrew;103; haskell
+dsa;18; test
+Yana;200; hz kto eto
+Angel;18; love
+Anna; 19;
