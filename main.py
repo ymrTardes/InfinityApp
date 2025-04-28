@@ -49,45 +49,45 @@ def run_app(name):
     print(f"Hello {name}")
     while True:
         msg_user = input("Введите сообщение: (:q for exit, :h for help) ")
-        splited = msg_user.split(" ")
+        split_message = msg_user.split(" ")
         # сообщение юзера разбитое на список
-        if command(splited, ":q"):
+        if command(split_message, ":q"):
             print(f"GG WP")
             break
-        elif command(splited, ":h"):
+        elif command(split_message, ":h"):
             run_help()
-        elif command(splited, ":r"):
+        elif command(split_message, ":r"):
             """
             инвертированное сообщение
             """
-            splited = " ".join(splited[1::])
-            print(splited[::-1])
-        elif command(splited, ":c"):
-            print(int(splited[1]) + int(splited[2]))
-        elif command(splited, ":l"):
-            run_list_users(splited)
+            split_message = " ".join(split_message[1::])
+            print(split_message[::-1])
+        elif command(split_message, ":c"):
+            print(int(split_message[1]) + int(split_message[2]))
+        elif command(split_message, ":l"):
+            run_list_users(split_message)
         else:
             print(f"{name}: {msg_user}")
             print(f"Нагибатор228: {replies()}")
 
 
-def command(splited, com):
-    return com.casefold() in splited[0].casefold()
+def command(split_message, com):
+    return com.casefold() in split_message[0].casefold()
 
 
-def run_list_users(splited):
+def run_list_users(split_message):
     """
     run_list_users(Список)
     Если передается :l - весь список пользователей
     Если :l <str> - ищутся пользователи, которые начинаются на <str>
     """
-    if len(splited) == 1:
+    if len(split_message) == 1:
             num = 0
             for i in account_list:
                 num += 1
                 print(f"{num}. {i}")
     else:
-        res_search = list(filter(lambda i: i.casefold().startswith(splited[1].casefold()), account_list))
+        res_search = list(filter(lambda i: i.casefold().startswith(split_message[1].casefold()), account_list))
         """
         переписал используя filter(под влиянием хаскеля)
         """
@@ -108,14 +108,15 @@ def replies():
 
 
 def run_help():
-    print("""
+    help_text = """
             :q - выход
             :h - помощь
             :r <msg> - перевернутое сообщение 
             :c <a> <b> - a + b     
             :l - вывод всех полььзователей
             :l <Строка> - поиск пользователей по свопадению
-            """)
+            """
+    print(help_text)
 
 
 if __name__ == "__main__":
