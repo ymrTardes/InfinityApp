@@ -1,5 +1,6 @@
 import random as rnd
-from words import *
+import os
+from words import macan_list
 
 # account_list = ["Yarik","Angel", "dsa", "Yana"]
 path_bd = "data/users.txt"
@@ -18,8 +19,9 @@ def main():
     """
     Функция main() запускается при старте
     """
-    print("___WELCOME___".center(100))
+    wrap_title("Welcome")
     # test = [DataUser("Yarik", 21), DataUser("dsa", 22)]
+    account_list = []
     with open(path_bd, "r") as file:
         users_lines = file.read()
         users_lines = users_lines.split("\n")
@@ -27,7 +29,6 @@ def main():
         # ДРУГОЙ ВАРИАНТ
         # for i in users_lines:
         #     account_list.append(i.split(";"))
-        account_list = []
         try:
             for usr in users_lines:
                 user_atrib = DataUser(usr[0].strip(), usr[1].strip())
@@ -49,7 +50,16 @@ def main():
 
 
 def wrap_title(s: str):
-    pass
+    def get_term_size():
+        try:
+            size = os.get_terminal_size()
+            return size.columns, size.lines
+        except:
+            return 80,25
+    columns, lines = get_term_size()
+    centred_text = s.center(columns)
+    print(centred_text)
+
 def check_age(a: int):
     """
     return вернет итак True или False, нет смысла в конструкции if else
