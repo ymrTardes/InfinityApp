@@ -19,11 +19,23 @@ class DataUser:
     def set_bio(self, bio: str):
         self.bio = bio
 
+
 def main():
     """
     Функция main() запускается при старте
     """
-    wrap_title("WELCOME")
+    print(f"{term.home}{term.clear}{term.move_y(int(term.height / 2.3))}")
+    print(term.black_on_darkkhaki(wrap_title('press any key to continue')))
+
+    with term.cbreak(), term.hidden_cursor():
+        inp = term.inkey()
+    
+    title_app = wrap_title("INFINITY APP", "*")
+    print(f"{term.home}{term.black_on_yellow3}{term.clear}{term.move_down(2)}{title_app}")
+    # print(term.move_down(2) + 'You pressed ' + term.bold(repr(inp)))
+    # wrap_title("WELCOME")
+
+
     # test = [DataUser("Yarik", 21), DataUser("dsa", 22)]
     account_list = []
     with open(path_bd, "r") as file:
@@ -76,11 +88,13 @@ def wrap_title(s: str, sub_char="_"):
     right_sub = decotate_len - left_sub
 
     title = (sub_char * left_sub + s + sub_char * right_sub)
-    print(term.clear+term.move_y(int(term.height / 2.5)))
-    print(term.blue(title))
-    with term.cbreak(), term.hidden_cursor():
-    # спрятать текст, спрятать курсор
-        pass
+    # print(term.clear+term.move_y(int(term.height / 2.5)))
+    # print(f"{term.home}{term.black_on_yellow3}{term.clear}")
+    # print(term.gray10(title))
+    # with term.cbreak(), term.hidden_cursor():
+        # спрятать текст, спрятать курсор
+    return term.center(title)
+
 
 
 def check_age(a: int):
@@ -95,7 +109,7 @@ def get_inp(query_msg):
 
 
 def run_registration(account_list):
-    wrap_title("РЕГИСТРАЦИЯ", "?")
+    # wrap_title("РЕГИСТРАЦИЯ", "?")
     name_inp = get_inp("Назовись: ")
     find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
     if len(find_user) > 0:
@@ -112,7 +126,7 @@ def run_registration(account_list):
 
 
 def run_login(account_list):
-    wrap_title("ВХОД", ".")
+    # wrap_title("ВХОД", ".")
     name_inp = get_inp("Введи имя заебал: ")
     find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
     if len(find_user) != 0:
@@ -127,17 +141,17 @@ def run_login(account_list):
 
 
 def run_app(account_list, user):
-    wrap_title("CHAT")
+    # wrap_title("CHAT")
     print(f"Hello {user.name}")
     while True:
         msg_user = input("Введите сообщение: (:q for exit, :h for help) ")
         split_message = msg_user.split(" ")
         # сообщение юзера разбитое на список
         if command(split_message, ":q"):
-            wrap_title("GG WP tima rakov".upper())
+            # wrap_title("GG WP tima rakov".upper())
             break
         elif command(split_message, ":h"):
-            wrap_title("Tarkov Help".upper())
+            # wrap_title("Tarkov Help".upper())
             print(out_help())
         elif command(split_message, ":r"):
             """
@@ -183,7 +197,8 @@ def run_list_users(split_message, account_list):
                 ord += 1
                 print(f"{ord}. {i.name}, {i.age}, {i.bio}")
     else:
-        res_search = list(filter(lambda i: i.name.startswith(split_message[1]), account_list))
+        start_sub = split_message[1].casefold()
+        res_search = list(filter(lambda i: i.name.casefold().startswith(start_sub), account_list))
         """
         переписал используя filter(под влиянием хаскеля)
         """
@@ -193,9 +208,10 @@ def run_list_users(split_message, account_list):
         if len(res_search) == 0:
             print("Никого не найдено")
         else:
-            # print(res_search[0].name, res_search[0].age)  Бля выводит первого найденого, ПЕРЕДЕЛАТЬ
-            # print(", ".join(res_search))
-            pass
+            ord = 0
+            for ob in res_search:
+                ord += 1
+                print(f"{ord}. {ob.name}, {ob.age}, {ob.bio}")
 
 
 def replies():
