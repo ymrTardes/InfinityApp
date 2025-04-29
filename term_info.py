@@ -12,9 +12,6 @@ print(f"{term.home}{term.black_on_yellow3}{term.clear}")
 # home >>> Position cursor at (0, 0).
 
 
-
-
-
 print(term.gray10("текст"))
 
 with term.cbreak(), term.hidden_cursor():
