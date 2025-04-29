@@ -18,7 +18,7 @@ def main():
     """
     Функция main() запускается при старте
     """
-    print("Hello World")
+    print("___WELCOME___".center(100))
     # test = [DataUser("Yarik", 21), DataUser("dsa", 22)]
     with open(path_bd, "r") as file:
         users_lines = file.read()
@@ -48,6 +48,8 @@ def main():
             print("ты в ZaLoop, введите заново")
 
 
+def wrap_title(s: str):
+    pass
 def check_age(a: int):
     """
     return вернет итак True или False, нет смысла в конструкции if else
@@ -138,7 +140,7 @@ def run_list_users(split_message, account_list):
                 ord += 1
                 print(f"{ord}. {i.name}, {i.age}, {i.bio}")
     else:
-        res_search = list(filter(lambda i: i.casefold().startswith(split_message[1].casefold()), account_list))
+        res_search = list(filter(lambda i: i.name.startswith(split_message[1]), account_list))
         """
         переписал используя filter(под влиянием хаскеля)
         """
@@ -148,7 +150,9 @@ def run_list_users(split_message, account_list):
         if len(res_search) == 0:
             print("Никого не найдено")
         else:
-            print(", ".join(res_search))
+            # print(res_search[0].name, res_search[0].age)  Бля выводит первого найденого, ПЕРЕДЕЛАТЬ
+            # print(", ".join(res_search))
+            pass
 
 
 def replies():

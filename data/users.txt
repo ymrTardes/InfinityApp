@@ -4,3 +4,5 @@ dsa;18; test
 Yana;200; hz kto eto
 Angel;18; love
 Anna; 19;
+Kara; 26;
+Macintoshi; 999;
