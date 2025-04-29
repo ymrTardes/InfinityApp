@@ -1,9 +1,13 @@
 import random as rnd
+from blessed import Terminal
 import os
 from words import macan_list
+term = Terminal()
+
 
 # account_list = ["Yarik","Angel", "dsa", "Yana"]
 path_bd = "data/users.txt"
+
 class DataUser:
     def __init__(self, name, age): # Конструктор
         """
@@ -19,7 +23,7 @@ def main():
     """
     Функция main() запускается при старте
     """
-    wrap_title("Welcome")
+    wrap_title("WELCOME")
     # test = [DataUser("Yarik", 21), DataUser("dsa", 22)]
     account_list = []
     with open(path_bd, "r") as file:
@@ -49,16 +53,35 @@ def main():
             print("ты в ZaLoop, введите заново")
 
 
-def wrap_title(s: str):
-    def get_term_size():
-        try:
-            size = os.get_terminal_size()
-            return size.columns, size.lines
-        except:
-            return 80,25
-    columns, lines = get_term_size()
-    centred_text = s.center(columns)
-    print(centred_text)
+def wrap_title(s: str, sub_char="_"):
+    """
+    2 варианта, используя os встроенная библиотека или сторонняя blessed
+    """
+    # def get_term_size():
+    #     try:
+    #         size = os.get_terminal_size()
+    #         return size.columns, size.lines
+    #     except:
+    #         return 80,25
+    # columns, _ = get_term_size() 
+    # # _ Значит что перменная не нужна
+    # centred_text = s.center(columns)
+    # print("_" * columns +"\n")
+    # # print(centred_text)
+    # print("_" * columns)
+    
+    width = term.width
+    decotate_len = width - len(s)
+    left_sub = decotate_len // 2
+    right_sub = decotate_len - left_sub
+
+    title = (sub_char * left_sub + s + sub_char * right_sub)
+    print(term.clear+term.move_y(int(term.height / 2.5)))
+    print(term.blue(title))
+    with term.cbreak(), term.hidden_cursor():
+    # спрятать текст, спрятать курсор
+        pass
+
 
 def check_age(a: int):
     """
@@ -72,6 +95,7 @@ def get_inp(query_msg):
 
 
 def run_registration(account_list):
+    wrap_title("РЕГИСТРАЦИЯ", "?")
     name_inp = get_inp("Назовись: ")
     find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
     if len(find_user) > 0:
@@ -88,6 +112,7 @@ def run_registration(account_list):
 
 
 def run_login(account_list):
+    wrap_title("ВХОД", ".")
     name_inp = get_inp("Введи имя заебал: ")
     find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
     if len(find_user) != 0:
@@ -102,32 +127,40 @@ def run_login(account_list):
 
 
 def run_app(account_list, user):
+    wrap_title("CHAT")
     print(f"Hello {user.name}")
     while True:
         msg_user = input("Введите сообщение: (:q for exit, :h for help) ")
         split_message = msg_user.split(" ")
         # сообщение юзера разбитое на список
         if command(split_message, ":q"):
-            print(f"GG WP")
+            wrap_title("GG WP tima rakov".upper())
             break
         elif command(split_message, ":h"):
+            wrap_title("Tarkov Help".upper())
             print(out_help())
         elif command(split_message, ":r"):
             """
             инвертированное сообщение
             """
             split_message = " ".join(split_message[1::])
-            print(split_message[::-1])
+            print(split_message[::-1].strip())
         elif command(split_message, ":c"):
             print(int(split_message[1]) + int(split_message[2]))
         elif command(split_message, ":l"):
             run_list_users(split_message, account_list)
         elif command(split_message, ":i"):
             print(f"Me >>> {user.name}, {user.age}, {user.bio}")
+        elif command(split_message, ":b"):
+            run_edit_bio(split_message, user)
+            print(f"Me >>> {user.name}, {user.age}, {user.bio}")
         else:
             print(f"{user.name} >>> {msg_user}")
             print(f"Нагибатор228 >>> {replies()}")
 
+
+def run_edit_bio(split_message, user):
+    pass
 
 def command(split_message: list, com: str):
     """
@@ -178,7 +211,9 @@ help_text = [
         , ":r <msg> - перевернутое сообщение"
         , ":c <a> <b> - a + b"
         , ":l - вывод всех полььзователей"
-        , ":l <Строка> - поиск пользователей по свопадению"
+        , ":l <text> - поиск пользователей по свопадению"
+        , ":i - информация обо мне"
+        , ":b <text> - изменить биографию (обо мне)"
         ]
 
 
