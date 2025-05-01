@@ -17,3 +17,5 @@ print(term.gray10("текст"))
 with term.cbreak(), term.hidden_cursor():
 # очистить экран
     pass
+
+fdfsdfsdfsd
