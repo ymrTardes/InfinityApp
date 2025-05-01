@@ -1,4 +1,4 @@
 .vscode/
-dist-newstyle/*
-version_hs/dist-newstyle/*
+dist-newstyle/
+version_hs/dist-newstyle/
 data/*
