@@ -6,7 +6,7 @@ term = Terminal()
 
 
 path_bd = "data/users.txt"
-
+# другое место другая строчка
 class DataUser:
     def __init__(self, name, age): # Конструктор
         """
