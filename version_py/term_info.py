@@ -18,4 +18,4 @@ with term.cbreak(), term.hidden_cursor():
 # очистить экран
     pass
 
-fdfsdfsdfsd
+f d
