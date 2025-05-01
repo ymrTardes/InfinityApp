@@ -3,7 +3,7 @@
 module Main where
 
 import System.IO
-  
+
 import System.Console.ANSI
 
 data User = User {
@@ -12,8 +12,8 @@ data User = User {
   , ubio   :: String
   }
   deriving (Show, Eq)
-   
-     
+  
+
 -- ? -------------------------------------
 -- ? Entry point
 -- ? -------------------------------------
