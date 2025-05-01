@@ -4,7 +4,7 @@ import os
 from data.words import macan_list
 term = Terminal()
 
-
+# dsadasdasdasdassd
 path_bd = "data/users.txt"
 
 class DataUser:
