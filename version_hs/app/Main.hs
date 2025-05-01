@@ -19,10 +19,8 @@ data User = User {
 
 main :: IO ()
 main = do
-  putStrLn "Hello"
-  putStrLn "Hello"
-  putStrLn "Hello"
-  putStrLn "Hello"
+  putStrLn "World"
+  putStrLn "World"
 
   hSetBuffering stdout NoBuffering
   hSetBuffering stdin NoBuffering
