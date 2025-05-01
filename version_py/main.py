@@ -5,7 +5,6 @@ from words import macan_list
 term = Terminal()
 
 
-# account_list = ["Yarik","Angel", "dsa", "Yana"]
 path_bd = "data/users.txt"
 
 class DataUser:
