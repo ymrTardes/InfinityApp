@@ -47,26 +47,26 @@ menuForm cls n users = do
   typeApp <- getKey
 
   let
-    rF = putStrLn "" >> hSetBuffering stdin LineBuffering >> registerForm users
-    lF = putStrLn "" >> hSetBuffering stdin LineBuffering >> loginForm users
+    rF = do
+      putStrLn ""
+      hSetBuffering stdin LineBuffering
+      e <- registerForm users
+      if e then menuForm False n users else pure ()
+    lF = do
+      putStrLn ""
+      hSetBuffering stdin LineBuffering
+      e <- loginForm users
+      if e then menuForm False n users else pure ()
 
   case typeApp of
     "\ESC[A" -> menuForm True (n - 1) users
     "\ESC[B" -> menuForm True (n + 1) users
     "\n"     -> case n of
-                  0 -> do
-                         e <- rF
-                         if e then menuForm False n users else pure ()
-                  1 -> do
-                         e <- lF
-                         if e then menuForm False n users else pure ()
+                  0 -> rF
+                  1 -> lF
                   _ -> pure ()
-    "R"      -> do
-                  e <- rF
-                  if e then menuForm False n users else pure ()
-    "L"      -> do
-                  e <- lF
-                  if e then menuForm False n users else pure ()
+    "R"      -> rF
+    "L"      -> lF
     "Q"      -> pure ()
     _        -> do
                   clearScreen
@@ -119,6 +119,7 @@ loginForm accountList = do
   else if length findUser /= 0 then do
     putStrLn $ "Login success"
     putStrLn "--CHAT----------"
+
     chatForm accountList (findUser !! 0)
     pure False
   else do
@@ -139,30 +140,34 @@ chatForm accountList user = do
 
   case msgCom !! 0 of
     ":q" -> pure ()
+    ":b" -> pure ()
+
+    -- Info
     ":h" -> mapM_ putStrLn showHelp
     ":a" -> mapM_ putStrLn chat
-    ":b" -> do
-      putStrLn "Bio updated"
-      let
-        user' = user {ubio = (msgCom !! 1)}
-        bacc  = break (==user) accountList
-        accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
-      chatForm accountList' $ user'
+    ":l" -> mapM_ (putStrLn . show) $ doList accountList msgCom
+
     ":i" -> putStrLn $ show user
-    ":r" -> putStrLn $ concat [ ulogin user, " [R]> ", (reverse . unwords . drop 1) msgCom]
-    ":c" -> putStrLn $ concat [ ulogin user, " [C]> "
-                              , show @Int $ read (msgCom !! 1) + read (msgCom !! 2)]
-    ":l" -> putStrLn $ show $
-              if (length msgCom /= 1) then
-                filter (and . zipWith (==) (msgCom !! 1) . ulogin) $ accountList
-              else
-                accountList
+
+    -- Actions
+    ":r" -> putStrLn $ concat [ ulogin user, " [R]> ", doReverse msgCom]
+    ":c" -> putStrLn $ concat [ ulogin user, " [C]> ", doCalc msgCom]
+
     _    -> do
       cursorUp 1
       clearLine
       putStrLn $ ulogin user ++ "> " ++ messageData
 
-  if msgCom !! 0 == ":q" then
-    pure ()
-  else
-    chatForm accountList user
+  case msgCom !! 0 of
+    ":q" -> pure ()
+    ":b" -> do
+              putStrLn "Bio updated"
+              let
+                user' = user {ubio = (msgCom !! 1)}
+                bacc  = break (==user) accountList
+                accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
+
+              chatForm accountList' $ user'
+
+    _    -> chatForm accountList user
+    
