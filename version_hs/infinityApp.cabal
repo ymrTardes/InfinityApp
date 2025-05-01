@@ -1,0 +1,37 @@
+cabal-version:      3.0
+
+name:               infinityApp
+
+version:            0.1.0.0
+
+license:            BSD-3-Clause
+
+license-file:       LICENSE
+
+author:             homaander
+
+
+maintainer:         hom.ander23@gmail.com
+
+build-type:         Simple
+
+extra-doc-files:    CHANGELOG.md
+
+
+
+common warnings
+    ghc-options: -Wall
+
+executable infinityApp
+    import:           warnings
+
+    main-is:          Main.hs
+
+
+    build-depends:
+        base ^>=4.20.0.0
+      , ansi-terminal
+
+    hs-source-dirs:   app
+
+    default-language: Haskell2010
