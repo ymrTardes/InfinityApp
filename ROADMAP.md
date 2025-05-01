@@ -1,1 +1,5 @@
 Ярик написал хуйню
+tfjoi3awhbjhfc nrteiujties
+retbmnspiojtnrtijres
+
+erktofparimfpoewarlrofaawmj
