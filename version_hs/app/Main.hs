@@ -12,7 +12,6 @@ data User = User {
   , ubio   :: String
   }
   deriving (Show, Eq)
-  
 
 -- ? -------------------------------------
 -- ? Entry point
