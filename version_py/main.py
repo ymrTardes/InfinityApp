@@ -1,7 +1,7 @@
 import random as rnd
 from blessed import Terminal
 import os
-from words import macan_list
+from data.words import macan_list
 term = Terminal()
 
 
