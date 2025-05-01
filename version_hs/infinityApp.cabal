@@ -1,37 +1,67 @@
 cabal-version:      3.0
 
 name:               infinityApp
-
 version:            0.1.0.0
-
 license:            BSD-3-Clause
-
-license-file:       LICENSE
-
 author:             homaander
-
-
 maintainer:         hom.ander23@gmail.com
-
 build-type:         Simple
-
 extra-doc-files:    CHANGELOG.md
 
 
+library
+  hs-source-dirs:
+      src
+  exposed-modules:
+      Config
+      User
+      Forms
 
-common warnings
-    ghc-options: -Wall
+  default-extensions:
+      TypeApplications
 
-executable infinityApp
-    import:           warnings
+  build-depends:
+      base >=4.7 && <5
+    , ansi-terminal
 
-    main-is:          Main.hs
+  ghc-options:
+      -Wall
+      -Wcompat
+      -Widentities
+      -Wincomplete-record-updates
+      -Wincomplete-uni-patterns
+      -Wmissing-export-lists
+      -Wmissing-home-modules
+      -Wpartial-fields
+      -Wredundant-constraints
 
+  default-language: Haskell2010
+
+
+executable infinityApp-exe
+
+    hs-source-dirs:
+      app
+    main-is:
+      Main.hs
+
+    default-extensions:
+      TypeApplications
 
     build-depends:
         base ^>=4.20.0.0
+      , infinityApp
       , ansi-terminal
 
-    hs-source-dirs:   app
+    ghc-options:
+      -Wall
+      -Wcompat
+      -Widentities
+      -Wincomplete-record-updates
+      -Wincomplete-uni-patterns
+      -Wmissing-export-lists
+      -Wmissing-home-modules
+      -Wpartial-fields
+      -Wredundant-constraints
 
     default-language: Haskell2010
