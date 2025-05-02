@@ -23,15 +23,14 @@ def menu_form(account_list):
             else:
                 break
         elif auth.upper() == "Q":
-            print(wrap_title("GG WP bOTi GOOD BYE EPTA", "*"))
             return None
         else:
             print("ты в ZaLoop, введите заново")
 
 
 def registration_form(account_list):
-    gui_wrapper("REGISTRATION", "*")
     while True:
+        gui_wrapper("REGISTRATION", "*")
         name_inp = get_inp("Назовись: (:q - выход) ")
         find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
         if len(find_user) > 0:
@@ -65,7 +64,7 @@ def login_form(account_list):
         find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
         if len(find_user) != 0:
             chat_form(account_list, find_user[0])
-            return True
+            return False
         else:
             print("Пользователь не найден")
             continue
@@ -79,9 +78,8 @@ def chat_form(account_list, user):
         split_message = msg_user.split(" ")
         # сообщение юзера разбитое на список
         if command(split_message, ":q"):
-            return
+            return True
         elif command(split_message, ":h"):
-            # wrap_title("Tarkov Help".upper())
             print(out_help())
         elif command(split_message, ":r"):
             """

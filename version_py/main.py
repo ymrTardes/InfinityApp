@@ -24,6 +24,7 @@ def main():
             
     try:
         menu_form(account_list)
+        print(wrap_title("GG WP bOTi GOOD BYE EPTA", "*"))
     except KeyboardInterrupt:
         gui_wrapper("Завершено пользователем")
 
