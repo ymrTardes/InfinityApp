@@ -1,5 +1,7 @@
 from blessed import Terminal
 term = Terminal()
+import sys
+
 
 # consts
 help_text = [
@@ -17,12 +19,10 @@ help_text = [
 path_bd = "version_py/data/users.txt"
 
 
-
-
 # UI functions
 def gui_wrapper(title, sub_char=" "):
     title_text = wrap_title(title, sub_char)
-    print(f"{term.home}{term.black_on_yellow3}{term.clear}{term.move_down(2)}{title_text}")
+    print(f"{term.home}{term.on_darkseagreen}{term.cyan4}{term.clear}{term.move_down(1)}{title_text}", flush="True")
 
 
 def wrap_title(title, sub_char=" "):

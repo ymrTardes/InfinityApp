@@ -17,3 +17,9 @@ print(term.gray10("текст"))
 with term.cbreak(), term.hidden_cursor():
 # очистить экран
     pass
+
+term.bright_cyan_reverse # будто выделителем
+
+term.black_on_yellow # текс + фон
+
+print(f"{term.on_wheat3}{term.hotpink3_reverse}")
