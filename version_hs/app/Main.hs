@@ -17,4 +17,4 @@ main = do
     uSplit = mSplit ';'
     users  = map (\usr -> User (uSplit usr !! 0) (read $ uSplit usr !! 1) (uSplit usr !! 2)) usersL
 
-  menuForm False 1 users
+  menuForm RNew 1 users
