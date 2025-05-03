@@ -8,21 +8,29 @@ where
 
 import System.IO
 import System.Console.ANSI
+import Data.Char
 
 import User
 import Config
 
-menuForm :: Bool -> Int -> [User] -> IO ()
+menuForm :: RenderOpt -> Int -> [User] -> IO ()
 menuForm cls (-1) u = menuForm cls 0 u
 menuForm cls 3    u = menuForm cls 2 u
 menuForm cls n users = do
   hSetBuffering stdin NoBuffering
 
-  if cls then do
-    cursorUp 4
-    setCursorColumn 0
-  else
-    pure ()
+  case cls of
+    RNew -> pure ()
+    RCls -> do
+              cursorUp 4
+              setCursorColumn 0
+    RErr msg -> do
+                  cursorUp 6
+                  setCursorColumn 0
+                  clearLine
+                  putStrLn ""
+                  clearLine
+                  putStrLn msg
 
   putStrLn "--APP-----------"
 
@@ -51,16 +59,16 @@ menuForm cls n users = do
       putStrLn ""
       hSetBuffering stdin LineBuffering
       e <- registerForm users
-      if e then menuForm False n users else pure ()
+      if e then menuForm RNew n users else pure ()
     lF = do
       putStrLn ""
       hSetBuffering stdin LineBuffering
       e <- loginForm users
-      if e then menuForm False n users else pure ()
+      if e then menuForm RNew n users else pure ()
 
-  case typeApp of
-    "\ESC[A" -> menuForm True (n - 1) users
-    "\ESC[B" -> menuForm True (n + 1) users
+  case map toUpper typeApp of
+    "\ESC[A" -> menuForm RCls (n - 1) users
+    "\ESC[B" -> menuForm RCls (n + 1) users
     "\n"     -> case n of
                   0 -> rF
                   1 -> lF
@@ -69,9 +77,7 @@ menuForm cls n users = do
     "L"      -> lF
     "Q"      -> pure ()
     _        -> do
-                  clearScreen
-                  putStrLn "Err"
-                  menuForm True 1 users
+                  menuForm (RErr "!!! No command !!!") 1 users
 
 
 
@@ -93,14 +99,17 @@ registerForm accountList = do
     putStr "Enter age: "
     age <- getLine
 
-    if not $ checkAge $ read age then do
+    if not . and $ map isDigit age then do
       putStrLn $ "Age incorrect"
+      registerForm accountList
+    else if not . checkAge $ read age then do
+      putStrLn $ "Age us not in range 18-80"
       registerForm accountList
     else do
       putStrLn $ "Register success"
       appendFile usersPath $ concat ["\n", login, ";", age, ";"]
-
-      putStrLn "---CHAT---"
+  
+      putStrLn "--CHAT----------"
       chatForm accountList (User login (read age) "")
       pure False
 
@@ -118,8 +127,8 @@ loginForm accountList = do
     pure True
   else if length findUser /= 0 then do
     putStrLn $ "Login success"
-    putStrLn "--CHAT----------"
 
+    putStrLn "--CHAT----------"
     chatForm accountList (findUser !! 0)
     pure False
   else do
@@ -138,7 +147,10 @@ chatForm accountList user = do
     msgCom = words messageData
     chat = lines chatS
 
-  case msgCom !! 0 of
+  cursorUp 1
+  clearLine
+
+  case map toLower (msgCom !! 0) of
     ":q" -> pure ()
     ":b" -> pure ()
 
@@ -154,8 +166,6 @@ chatForm accountList user = do
     ":c" -> putStrLn $ concat [ ulogin user, " [C]> ", doCalc msgCom]
 
     _    -> do
-      cursorUp 1
-      clearLine
       putStrLn $ ulogin user ++ "> " ++ messageData
 
   case msgCom !! 0 of

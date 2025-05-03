@@ -1,5 +1,7 @@
 module Config (
-    usersPath
+    RenderOpt (..)
+
+  , usersPath
   , chatPath
   , showHelp
   , getKey
@@ -15,6 +17,9 @@ where
 
 import System.IO
 import User
+
+data RenderOpt = RCls | RNew | RErr String
+  deriving Show
 
 
 usersPath :: FilePath

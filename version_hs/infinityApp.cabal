@@ -6,7 +6,6 @@ license:            BSD-3-Clause
 author:             homaander
 maintainer:         hom.ander23@gmail.com
 build-type:         Simple
-extra-doc-files:    CHANGELOG.md
 
 
 library
@@ -39,7 +38,6 @@ library
 
 
 executable infinityApp-exe
-
     hs-source-dirs:
       app
     main-is:
@@ -50,8 +48,9 @@ executable infinityApp-exe
 
     build-depends:
         base ^>=4.20.0.0
-      , infinityApp
       , ansi-terminal
+
+      , infinityApp
 
     ghc-options:
       -Wall
