@@ -29,8 +29,8 @@ def menu_form(account_list):
 
 
 def registration_form(account_list):
+    gui_wrapper("REGISTRATION", "*")
     while True:
-        gui_wrapper("REGISTRATION", "*")
         name_inp = get_inp("Назовись: (:q - выход) ")
         find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
         if len(find_user) > 0:
@@ -48,7 +48,7 @@ def registration_form(account_list):
                     chat_form(account_list, DataUser(name_inp, age_inp))
                     return False
                 else:
-                    print("Маленький еще")
+                    print("Возраст должен быть от 18 до 80")
                     continue
             except Exception as e:
                 print(f"Чилос вводи, мда...")
@@ -77,28 +77,25 @@ def chat_form(account_list, user):
         msg_user = input("Введите сообщение: (:q for exit, :h for help) ")
         split_message = msg_user.split(" ")
         # сообщение юзера разбитое на список
-        if command(split_message, ":q"):
-            return True
-        elif command(split_message, ":h"):
-            print(out_help())
-        elif command(split_message, ":r"):
-            """
-            инвертированное сообщение
-            """
-            split_message = " ".join(split_message[1::])
-            print(split_message[::-1].strip())
-        elif command(split_message, ":c"):
-            print(int(split_message[1]) + int(split_message[2]))
-        elif command(split_message, ":l"):
-            run_list_users(split_message, account_list)
-        elif command(split_message, ":i"):
-            print(f"Me >>> {user.name}, {user.age}, {user.bio}")
-        elif command(split_message, ":b"):
-            run_edit_bio(split_message, user)
-            print(f"Me >>> {user.name}, {user.age}, {user.bio}")
-        else:
-            print(f"{user.name} >>> {msg_user}")
-            print(f"Нагибатор228 >>> {replies()}")
+        match split_message[0].lower() if split_message else None:
+            case ":q":
+                return True
+            case ":h":
+                print(out_help())
+            case ":r":
+                reverse_text(split_message)
+            case ":c":
+                print(int(split_message[1]) + int(split_message[2]))
+            case ":l":
+                run_list_users(split_message, account_list)
+            case ":i":
+                print(f"Me >>> {user.name}, {user.age}, {user.bio}")
+            case ":b":
+                run_edit_bio(split_message, user)
+                print(f"Me >>> {user.name}, {user.age}, {user.bio}")
+            case _: # Любой другой случай
+                print(f"{user.name} >>> {msg_user}")
+                print(f"НАГИБАТОР_228 >>> {random_replies()}")
 
 
 def run_edit_bio(split_message, user):
@@ -129,7 +126,7 @@ def run_list_users(split_message, account_list):
                 print(f"{ord}. {ob.name}, {ob.age}, {ob.bio}")
 
 
-def replies():
+def random_replies():
     reply_msg = []
     for i in range(rnd.randint(1,3)):
         reply_msg.append(rnd.choice(macan_list))

@@ -108,3 +108,68 @@ with open(path_bd, "r") as file:
     # users_lines --> ['Yarik;23;chert', 'Andrew;103; haskell']
     users_lines = list(map(lambda x: x.split(";"), users_lines)) # возвращает список, разделя по ;
     # users_lines --> [['Yarik', '23', 'chert'], ['Andrew', '103', ' haskell']]
+
+# выбор команды через if/elif и через match case
+def chat_form(account_list, user):
+    gui_wrapper("CHAT", "*")
+    print(f"Hello {user.name}")
+    while True:
+        msg_user = input("Введите сообщение: (:q for exit, :h for help) ")
+        split_message = msg_user.split(" ")
+        # сообщение юзера разбитое на список
+        if command(split_message, ":q"):
+            return True
+        elif command(split_message, ":h"):
+            print(out_help())
+        elif command(split_message, ":r"):
+           reverse_text(split_message)
+        elif command(split_message, ":c"):
+            print(int(split_message[1]) + int(split_message[2]))
+        elif command(split_message, ":l"):
+            run_list_users(split_message, account_list)
+        elif command(split_message, ":i"):
+            print(f"Me >>> {user.name}, {user.age}, {user.bio}")
+        elif command(split_message, ":b"):
+            run_edit_bio(split_message, user)
+            print(f"Me >>> {user.name}, {user.age}, {user.bio}")
+        else:
+            print(f"{user.name} >>> {msg_user}")
+            print(f"НАГИБАТОР_228 >>> {random_replies()}")
+
+# match case
+def chat_form(account_list, user):
+    gui_wrapper("CHAT", "*")
+    print(f"Hello {user.name}")
+    while True:
+        msg_user = input("Введите сообщение: (:q for exit, :h for help) ")
+        split_message = msg_user.split(" ")
+        # сообщение юзера разбитое на список
+        match split_message[0].lower() if split_message else None:
+            case ":q":
+                return True
+            case ":h":
+                print(out_help())
+            case ":r":
+                reverse_text(split_message)
+            case ":c":
+                print(int(split_message[1]) + int(split_message[2]))
+            case ":l":
+                run_list_users(split_message, account_list)
+            case ":i":
+                print(f"Me >>> {user.name}, {user.age}, {user.bio}")
+            case ":b":
+                run_edit_bio(split_message, user)
+                print(f"Me >>> {user.name}, {user.age}, {user.bio}")
+            case _: # Любой другой случай
+                print(f"{user.name} >>> {msg_user}")
+                print(f"НАГИБАТОР_228 >>> {random_replies()}")
+
+
+# не нужна теперь
+def command(split_message: list, command: str):
+    """
+        принимает сообщение разделенное на список, и команду вторым аргументом
+        возвращает bool (T/F)
+        есть ли команда в сообщении от пользователя
+    """
+    return command.casefold() in split_message[0].casefold()

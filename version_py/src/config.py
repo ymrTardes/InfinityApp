@@ -46,17 +46,16 @@ def check_age(a: int):
     """
     return вернет итак True или False, нет смысла в конструкции if else
     """
-    return a > 17
+    return a > 17 and a <= 80
 
 
 def get_inp(query_msg):
     return input(query_msg).strip() # strip уберает лишние пробелы по умолчанию
 
 
-def command(split_message: list, com: str):
+def reverse_text(text):    
     """
-        принимает сообщение разделенное на список, и команду вторым аргументом
-        возвращает bool (T/F)
-        есть ли команда в сообщении от пользователя
+    инвертированное сообщение
     """
-    return com.casefold() in split_message[0].casefold()
+    text = " ".join(text[1::])
+    print(text[::-1].strip())
