@@ -16,13 +16,22 @@ help_text = [
         ]
 
 
+menu_form_elements = ["REGISTRATION (R)", "LOGIN (L)", "Press 'q' to Quit."]
+choice_menu = 0
+
+
 path_bd = "version_py/data/users.txt"
 
 
 # UI functions
 def gui_wrapper(title, sub_char=" "):
     title_text = wrap_title(title, sub_char)
-    print(f"{term.home}{term.on_darkseagreen}{term.cyan4}{term.clear}{term.move_down(1)}{title_text}", flush="True")
+    # print(f"{term.home}{term.on_brown2}{term.deepskyblue2}{term.clear}{term.move_down(1)}{title_text}")
+    print(term.move_down(1) + title_text)
+
+
+# def error_text(text):
+#     print(f"{term}")
 
 
 def wrap_title(title, sub_char=" "):
@@ -32,7 +41,7 @@ def wrap_title(title, sub_char=" "):
     right_margin = decotate_len - left_margin
 
     title = (sub_char * left_margin + title + sub_char * right_margin)
-    return term.center(title)
+    return (term.deepskyblue2_reverse(term.center(title)))
 
 
 
