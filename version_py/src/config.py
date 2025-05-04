@@ -17,7 +17,7 @@ help_text = [
 
 
 menu_form_elements = ["REGISTRATION (R)", "LOGIN (L)", "Press 'q' to Quit."]
-choice_menu = 0
+choice_menu = 0 # нужна для отрисовки какой пункт меню выбран в >>> draw_menu()
 
 
 path_bd = "version_py/data/users.txt"
@@ -27,11 +27,11 @@ path_bd = "version_py/data/users.txt"
 def gui_wrapper(title, sub_char=" "):
     title_text = wrap_title(title, sub_char)
     # print(f"{term.home}{term.on_brown2}{term.deepskyblue2}{term.clear}{term.move_down(1)}{title_text}")
-    print(term.move_down(1) + title_text)
+    print(term.move_down(3) + title_text)
 
 
-# def error_text(text):
-#     print(f"{term}")
+def error_text(text):
+    print(term.red_reverse(text))
 
 
 def wrap_title(title, sub_char=" "):

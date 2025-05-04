@@ -24,9 +24,10 @@ def main():
             
     try:
         menu_form(account_list)
-        wrap_title("GG WP bOTi GOOD BYE EPTA", "*")
+        
         print(term.normal)
     except KeyboardInterrupt:
+        print(term.home + term.clear)
         gui_wrapper("Завершено пользователем", "♰")
         print(term.normal)
 

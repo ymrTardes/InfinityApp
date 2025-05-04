@@ -9,7 +9,7 @@ from src.forms import *
 
 def menu_form(account_list):
     print(term.clear)
-    draw_menu() # отрисовка меню с choice_menu = 0, т.е выьран первый пункт меню
+    draw_menu() # отрисовка меню с choice_menu = 0, т.е выбран первый пункт меню
     global choice_menu
     key_i =''
     
@@ -17,7 +17,7 @@ def menu_form(account_list):
         with term.cbreak(), term.hidden_cursor(): # блокировка ввода пользователя, чтобы все происходило по отслеживанию нажатой кнопки
             key_i = term.inkey(timeout=10)
         if not key_i:
-            print("Ожидание ввода...")
+            print(term.lavenderblush4_reverse("Ожидание ввода..."))
         elif key_i.name == "KEY_DOWN":
             if choice_menu != 2:
                 choice_menu += 1
@@ -33,7 +33,7 @@ def menu_form(account_list):
                 case 1:
                     login_form(account_list)
                 case 2:
-                    print("bb" + term.normal)
+                    print(wrap_title("GG WP bOTi GOOD BYE EPTA", "*"))
             break
         elif key_i.lower() == "r":
             registration_form(account_list)
@@ -46,7 +46,7 @@ def draw_menu():
     отрисовка меню
     выделаяет цветом тот элемент, индекс которого совпадает с choice_menu
     """
-    # print(term.move_up(3) + term.home)
+    print(term.home) # Возвращает курсор в 0 позицию, из за этого меню перезаписывается
     gui_wrapper("INFINITY APP", "*")
     for i in range(0,len(menu_form_elements)):
         if i == choice_menu:
@@ -61,7 +61,7 @@ def registration_form(account_list):
         name_inp = get_inp("Назовись: (:q - выход) ")
         find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
         if len(find_user) > 0:
-            print("Уже есть такой педик")
+            error_text("Уже есть такой педик")
             continue
         elif name_inp == ":q":
             return True
@@ -75,10 +75,10 @@ def registration_form(account_list):
                     chat_form(account_list, DataUser(name_inp, age_inp))
                     return False
                 else:
-                    print("Возраст должен быть от 18 до 80")
+                    error_text("Возраст должен быть от 18 до 80")
                     continue
             except Exception as e:
-                print(f"Чилос вводи, мда...")
+                error_text("Чилос вводи, мда...")
                 continue
 
 
@@ -93,7 +93,7 @@ def login_form(account_list):
             chat_form(account_list, find_user[0])
             return False
         else:
-            print("Пользователь не найден")
+            error_text("Пользователь не найден")
             continue
 
 
@@ -115,7 +115,7 @@ def chat_form(account_list, user):
                 try:
                     print(int(split_message[1]) + int(split_message[2]))
                 except Exception as e:
-                    print("Вводите числа в формате >>> :c <1> <2>")
+                    error_text("Вводите числа в формате >>> :c <1> <2>")
             case ":l":
                 run_list_users(split_message, account_list)
             case ":i":
@@ -124,10 +124,10 @@ def chat_form(account_list, user):
                 run_edit_bio(split_message, user)
                 print(f"Me >>> {user.name}, {user.age}, {user.bio}")
             case "\n":
-                print("Сообщение пустое")
+                error_text("Сообщение пустое")
             case _: # Любой другой случай
                 print(f"{user.name} >>> {msg_user}")
-                print(f"НАГИБАТОР_228 >>> {random_replies()}")
+                print(term.pink_reverse(f"НАГИБАТОР_228 >>> {random_replies()}"))
 
 
 def run_edit_bio(split_message, user):
@@ -150,7 +150,7 @@ def run_list_users(split_message, account_list):
         res_search = list(filter(lambda i: i.name.casefold().startswith(start_sub), account_list))
 
         if len(res_search) == 0:
-            print("Никого не найдено")
+            error_text("Никого не найдено")
         else:
             ord = 0
             for ob in res_search:
