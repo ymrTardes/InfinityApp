@@ -173,3 +173,35 @@ def command(split_message: list, command: str):
         есть ли команда в сообщении от пользователя
     """
     return command.casefold() in split_message[0].casefold()
+
+# полезное
+text = "Hello"
+is_string = isinstance(text, str)  # True проверка на является ли перменная строкой
+from collections.abc import Sequence # нужна библиотека для этого
+
+text = "Hello"
+is_sequence = isinstance(text, Sequence)  # True (строка — это последовательность символов)
+
+
+# старое меню
+
+def menu_form(account_list):
+    gui_wrapper("INFINITY APP", "*")
+    while True:
+        auth = input("Register/Login/Quit: R/L/Q? ")
+        if auth.upper() == "R":
+            exit_bool = registration_form(account_list)
+            if exit_bool:
+                continue
+            else:
+                break
+        elif auth.upper() == "L":
+            exit_bool = login_form(account_list)
+            if exit_bool:
+                continue
+            else:
+                break
+        elif auth.upper() == "Q":
+            return None
+        else:
+            print("ты в ZaLoop, введите заново")

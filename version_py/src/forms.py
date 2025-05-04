@@ -6,26 +6,53 @@ from src.forms import *
 
 
 
+
 def menu_form(account_list):
+    print(term.clear)
+    draw_menu() # отрисовка меню с choice_menu = 0, т.е выьран первый пункт меню
+    global choice_menu
+    key_i =''
+    
+    while key_i.lower() != "q":
+        with term.cbreak(), term.hidden_cursor(): # блокировка ввода пользователя, чтобы все происходило по отслеживанию нажатой кнопки
+            key_i = term.inkey(timeout=10)
+        if not key_i:
+            print("Ожидание ввода...")
+        elif key_i.name == "KEY_DOWN":
+            if choice_menu != 2:
+                choice_menu += 1
+            draw_menu()
+        elif key_i.name == "KEY_UP":
+            if choice_menu != 0:
+                choice_menu -= 1
+            draw_menu()
+        elif key_i.name == "KEY_ENTER":
+            match choice_menu:
+                case 0:
+                    registration_form(account_list)
+                case 1:
+                    login_form(account_list)
+                case 2:
+                    print("bb" + term.normal)
+            break
+        elif key_i.lower() == "r":
+            registration_form(account_list)
+        elif key_i.lower() == "l":
+            login_form(account_list)
+
+
+def draw_menu():
+    """
+    отрисовка меню
+    выделаяет цветом тот элемент, индекс которого совпадает с choice_menu
+    """
+    # print(term.move_up(3) + term.home)
     gui_wrapper("INFINITY APP", "*")
-    while True:
-        auth = input("Register/Login/Quit: R/L/Q? ")
-        if auth.upper() == "R":
-            exit_bool = registration_form(account_list)
-            if exit_bool:
-                continue
-            else:
-                break
-        elif auth.upper() == "L":
-            exit_bool = login_form(account_list)
-            if exit_bool:
-                continue
-            else:
-                break
-        elif auth.upper() == "Q":
-            return None
+    for i in range(0,len(menu_form_elements)):
+        if i == choice_menu:
+            print(term.deepskyblue2_reverse(menu_form_elements[i]))
         else:
-            print("ты в ZaLoop, введите заново")
+            print(menu_form_elements[i])
 
 
 def registration_form(account_list):
@@ -85,7 +112,10 @@ def chat_form(account_list, user):
             case ":r":
                 reverse_text(split_message)
             case ":c":
-                print(int(split_message[1]) + int(split_message[2]))
+                try:
+                    print(int(split_message[1]) + int(split_message[2]))
+                except Exception as e:
+                    print("Вводите числа в формате >>> :c <1> <2>")
             case ":l":
                 run_list_users(split_message, account_list)
             case ":i":
@@ -93,6 +123,8 @@ def chat_form(account_list, user):
             case ":b":
                 run_edit_bio(split_message, user)
                 print(f"Me >>> {user.name}, {user.age}, {user.bio}")
+            case "\n":
+                print("Сообщение пустое")
             case _: # Любой другой случай
                 print(f"{user.name} >>> {msg_user}")
                 print(f"НАГИБАТОР_228 >>> {random_replies()}")
