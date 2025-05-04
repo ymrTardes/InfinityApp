@@ -55,7 +55,6 @@ def draw_menu():
             print(menu_form_elements[i])
 
 
-
 def registration_form(account_list):
     gui_wrapper("REGISTRATION", "*")
     while True:
