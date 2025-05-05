@@ -62,6 +62,11 @@ def get_inp(query_msg):
     return input(query_msg).strip() # strip уберает лишние пробелы по умолчанию
 
 
+def login_only_letters(name):
+    res = list(filter(lambda l: l.isdigit(), name))
+    return len(res) != 0
+
+
 def reverse_text(text):    
     """
     инвертированное сообщение

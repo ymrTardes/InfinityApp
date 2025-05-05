@@ -65,6 +65,8 @@ def registration_form(account_list):
             continue
         elif name_inp == ":q":
             return True
+        elif login_only_letters(name_inp):
+            error_text("Логин должен быть без цифр")
         else:
             try:
                 age_inp = int(get_inp("Скок по земле ходишь епта: "))
