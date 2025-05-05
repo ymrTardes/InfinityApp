@@ -36,8 +36,10 @@ registerForm accountList = do
       registerForm accountList
     else do
       successText "Register success"
-      appendFile usersPath $ concat ["\n", login, ";", age, ";"]
+      -- appendFile usersPath $ concat ["\n", login, ";", age, ";"]
   
       titleText " [CHAT]         "
-      chatForm accountList (User login (read age) "")
+      let
+        usr = User login (read age) ""
+      chatForm (accountList <> [usr]) usr
       pure False

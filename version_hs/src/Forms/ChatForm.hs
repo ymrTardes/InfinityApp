@@ -49,7 +49,8 @@ chatForm accountList user = do
         putStrLn $ ulogin user ++ "> " ++ messageData
 
     case map toLower (msgCom !! 0) of
-      ":q" -> pure ()
+      ":q" -> do
+                writeFile usersPath $ prepareUsers accountList
       ":b" -> do
                 putStrLn "Bio updated"
                 let
@@ -61,6 +62,9 @@ chatForm accountList user = do
 
       _    -> chatForm accountList user
 
+
+prepareUsers :: [User] -> String
+prepareUsers u = concat $ map (\a -> concat [ulogin a, ";", show $ uage a, ";", ubio a, "\n"] ) u
 
 doReverse :: [String] -> Maybe String
 doReverse (_:[]) = Nothing

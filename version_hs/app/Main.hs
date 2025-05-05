@@ -13,8 +13,10 @@ main = do
   
   usersS <- readFile usersPath
   let
-    usersL = lines usersS
+    usersL = filter (/= []) $ lines usersS
     uSplit = mSplit ';'
     users  = map (\usr -> User (uSplit usr !! 0) (read $ uSplit usr !! 1) (uSplit usr !! 2)) usersL
+
+  -- print usersL
 
   menuForm RNew 0 users
