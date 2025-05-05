@@ -6,8 +6,7 @@ module Config (
   , showHelp
 
   , getKey
-  , colorPrintBg
-  , colorPrintFg
+  , colorPrint
   , titleText
   , errorText
   , successText
@@ -63,14 +62,11 @@ colorPrint l c msg = do
   setSGR [Reset]
   putStrLn ""
 
-colorPrintBg, colorPrintFg :: Color -> String -> IO ()
-colorPrintBg c msg = colorPrint Background c msg
-colorPrintFg c msg = colorPrint Foreground c msg
-
 titleText, errorText, successText :: String -> IO ()
-titleText   = colorPrintBg Magenta
-errorText   = colorPrintFg Red
-successText = colorPrintFg Green
+titleText   = colorPrint Background Magenta
+
+errorText   = colorPrint Foreground Red
+successText = colorPrint Foreground Green
 
 -- Usually
 checkAge :: Int -> Bool

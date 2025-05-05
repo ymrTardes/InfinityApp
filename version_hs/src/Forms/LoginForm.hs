@@ -17,11 +17,11 @@ loginForm accountList = do
   if login == ":q" then
     pure True
   else if length findUser /= 0 then do
-    putStrLn $ "Login success"
+    successText $ "Login success"
 
     titleText " [CHAT]         "
     chatForm accountList (findUser !! 0)
     pure False
   else do
-    putStrLn $ "No account"
+    errorText $ "No account"
     pure True

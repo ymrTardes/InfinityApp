@@ -37,7 +37,7 @@ menuForm cls n users = do
       , (1, "> (L)ogin       ")
       , (2, "> (Q)ite        ")
       ]
-  mapM_ (\(i, s) ->  if i == n then do colorPrintBg Blue s else putStrLn s) m
+  mapM_ (\(i, s) ->  if i == n then do colorPrint Background Blue s else putStrLn s) m
 
   clearLine
   putStr "> "
