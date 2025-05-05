@@ -54,7 +54,7 @@ chatForm accountList user = do
       ":b" -> do
                 putStrLn "Bio updated"
                 let
-                  user' = user {ubio = (msgCom !! 1)}
+                  user' = user {ubio = (unwords $ drop 1 msgCom)}
                   bacc  = break (==user) accountList
                   accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
 
