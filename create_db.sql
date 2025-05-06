@@ -1,8 +1,12 @@
 /*
+  Мини инструкция для создания БД
+
   > sqlite3
   >> .read create_db.sql    - Выполнить скрипт создания таблицы
   >> .save infinityApp.db   - Сохранить БД
   >> .exit
+
+  Тестирования БД
 
   > sqlite3
   >> .open infinityApp.db   - Открыть БД
@@ -17,6 +21,12 @@ create table users(
   name TEXT,
   age INTEGER,
   bio TEXT
+);
+
+create table chat_messages(
+  id INTEGER NOT NULL primary key,
+  user_id INTEGER,
+  message TEXT
 );
 
 insert into `users` values (1, 'qwe', 18, 'Dev account'), (2, 'homaander', 25, 'Admin');
