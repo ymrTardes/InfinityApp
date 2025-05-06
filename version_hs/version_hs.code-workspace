@@ -1,9 +1,11 @@
 {
 	"folders": [
 		{
+			"name": "HS InfinityApp",
 			"path": "."
 		},
 		{
+			"name": "ALL Files",
 			"path": ".."
 		}
 	],
