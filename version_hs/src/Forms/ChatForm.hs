@@ -52,7 +52,7 @@ chatForm accountList user = do
       ":q" -> do
                 writeFile usersPath $ prepareUsers accountList
       ":b" -> do
-                putStrLn "Bio updated"
+                successText "Bio updated"
                 let
                   user' = user {ubio = (unwords $ drop 1 msgCom)}
                   bacc  = break (==user) accountList

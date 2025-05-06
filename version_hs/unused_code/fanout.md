@@ -1,3 +1,7 @@
+
+### Тестирование ansi-terminal
+
+```haskell
 hSetBuffering stdout NoBuffering
 hSetBuffering stdin NoBuffering
 
@@ -21,3 +25,4 @@ restoreCursor
 
 putStrLn "---AA---"
 hFlush stdout
+```
