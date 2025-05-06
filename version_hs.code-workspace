@@ -2,11 +2,11 @@
 	"folders": [
 		{
 			"name": "HS InfinityApp",
-			"path": "."
+			"path": "./version_hs"
 		},
 		{
 			"name": "ALL Files",
-			"path": ".."
+			"path": "."
 		}
 	],
 	"settings": {}
