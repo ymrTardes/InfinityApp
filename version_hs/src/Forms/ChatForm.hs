@@ -7,7 +7,9 @@ import User
 import Config
 import Control.Monad
 
-chatForm :: ([User], User) -> IO MenuOption
+type ChatData = ([User], User)
+
+chatForm :: ChatData -> IO MenuOption
 chatForm appData@(accountList, _) = do
   putStr "Message (or :q): "
   messageData <- getLine
@@ -16,18 +18,16 @@ chatForm appData@(accountList, _) = do
   cursorUp 1
   clearLine
 
-  if and (zipWith (==) ":q" messageData) && length messageData == 2 then do
+  if ":q" == messageData then do
     writeFile usersPath $ prepareUsers accountList
     pure MenuClose
-
   else do
     (accountList', user') <- commandRender (words messageData) appData
     chatForm (accountList', user')
 
 
-commandRender :: [String] -> ([User], User) -> IO ([User], User)
+commandRender :: [String] -> ChatData -> IO ChatData
 commandRender [] appData = pure appData
-
 commandRender (":b":args) (accountList, user) = do
   successText "Bio updated"
   let
@@ -36,31 +36,22 @@ commandRender (":b":args) (accountList, user) = do
     accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
 
   pure (accountList', user')
-
-commandRender (cmd:args) (accountList,user) = do
+commandRender (cmd:args) (accountList, user) = do
   case cmd of
     -- Info
     ":h" -> mapM_ putStrLn showHelp
     ":l" -> mapM_ (putStrLn . show) $ doList accountList args
-
     ":i" -> putStrLn $ show user
 
     -- Actions
-    ":r" -> do
-              putStr $ concat [ ulogin user, " [R]> "]
-              case doReverse args of
-                Nothing  -> errorText "Command error :r <str>"
-                Just res -> putStrLn res
-    ":c" -> do
-              putStr $ concat [ ulogin user, " [C]> "]
-              case doCalc args of
-                Nothing  -> errorText "Command error :c <num> <num>"
-                Just res -> putStrLn res
+    ":r" -> runAction user (doReverse args) "R" "Command error :r <str>"
+    ":c" -> runAction user (doCalc args)    "C" "Command error :c <num> <num>"
 
     -- Just message
     _    -> putStrLn $ ulogin user ++ "> " ++ unwords (cmd:args)
 
   pure (accountList, user)
+
 
 showHelp :: [String]
 showHelp =  [ " [HELP]         "
@@ -74,13 +65,17 @@ showHelp =  [ " [HELP]         "
             ]
 
 
-prepareUsers :: [User] -> String
-prepareUsers  = concat . map (\a -> concat [ulogin a, ";", show $ uage a, ";", ubio a, "\n"] )
+runAction :: User -> Maybe String -> String -> String -> IO ()
+runAction user fRes logo errMsg = do
+              putStr $ concat [ ulogin user, " [", logo, "]> "]
+              case fRes of
+                Nothing  -> errorText errMsg
+                Just res -> putStrLn res
+
 
 doReverse :: [String] -> Maybe String
 doReverse [] = Nothing
 doReverse x  = pure $ (reverse . unwords) x
-
 
 doCalc :: [String] -> Maybe String
 doCalc []      = Nothing
