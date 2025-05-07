@@ -7,7 +7,7 @@ import Config
 
 import Forms.ChatForm
 
-registerForm :: [User] -> IO Bool
+registerForm :: [User] -> IO MenuOption
 registerForm accountList = do
   titleText " [REGISTRATION] "
   putStr "Login (or :q): "
@@ -17,7 +17,8 @@ registerForm accountList = do
     findUser = filter (\x -> login == ulogin x) accountList
 
   if login == ":q" then
-    pure True
+    pure MenuNew
+
   else if length findUser /= 0 then do
     errorText "Login is used"
     registerForm accountList
@@ -31,9 +32,11 @@ registerForm accountList = do
     if not . and $ map isDigit age then do
       errorText "Age incorrect"
       registerForm accountList
+  
     else if not . checkAge $ read age then do
       errorText "Age us not in range 18-80"
       registerForm accountList
+
     else do
       successText "Register success"
       -- appendFile usersPath $ concat ["\n", login, ";", age, ";"]
@@ -43,4 +46,8 @@ registerForm accountList = do
       let
         usr = User 0 login (read age) ""
       chatForm (accountList <> [usr]) usr
-      pure False
+      pure MenuClose
+
+
+checkAge :: Int -> Bool
+checkAge x = (x > 17) && (x < 80)

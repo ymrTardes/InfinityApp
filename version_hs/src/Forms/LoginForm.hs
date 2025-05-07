@@ -5,7 +5,7 @@ import Config
 
 import Forms.ChatForm
 
-loginForm :: [User] -> IO Bool
+loginForm :: [User] -> IO MenuOption
 loginForm accountList = do
   titleText " [LOGIN]        "
   putStr "Login (or :q): "
@@ -15,13 +15,12 @@ loginForm accountList = do
     findUser = filter (\x -> login == ulogin x) accountList
 
   if login == ":q" then
-    pure True
+    pure MenuNew
   else if length findUser /= 0 then do
     successText $ "Login success"
 
     titleText " [CHAT]         "
     chatForm accountList (findUser !! 0)
-    pure False
+    pure MenuClose
   else do
-    errorText $ "No account"
-    pure True
+    pure $ MenuErr "No account"

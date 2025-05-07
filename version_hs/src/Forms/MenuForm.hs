@@ -10,60 +10,77 @@ import Config
 import Forms.RegisterForm
 import Forms.LoginForm
 
-menuForm :: RenderOpt -> Int -> [User] -> IO ()
+type MenuElement = (Int, (String, IO ()))
+
+menuForm :: MenuOption -> Int -> [User] -> IO ()
 menuForm cls (-1) u = menuForm cls 0 u
 menuForm cls 3    u = menuForm cls 2 u
-menuForm cls n users = do
+menuForm MenuClose _ _ = pure ()
+menuForm (MenuErr msg) n users  = do
+                                    clearMenu
+                                    putStr "Error: "
+                                    errorText msg
+                                    menuForm MenuNew n users
+menuForm MenuClear n users      = do
+                                    clearMenu
+                                    putStrLn ""
+                                    menuForm MenuNew n users
+menuForm MenuNew n users = do
   hSetBuffering stdin NoBuffering
-
-  case cls of
-    RNew -> pure ()
-    RCls -> do
-              cursorUp 4
-              setCursorColumn 0
-    RErr msg -> do
-                  cursorUp 6
-                  setCursorColumn 0
-                  clearLine
-                  putStrLn ""
-                  clearLine
-                  errorText msg
-
   titleText " [APP]          "
 
-  let 
-    m = [
-        (0, "> (R)egister    ")
-      , (1, "> (L)ogin       ")
-      , (2, "> (Q)ite        ")
-      ]
-  mapM_ (\(i, s) ->  if i == n then do colorPrint Background Blue s else putStrLn s) m
+  let
+    runFormR = runForm users registerForm
+    runFormL = runForm users loginForm
 
+    menu_list = zip [0..] [
+        ("> (R)egister    ", runFormR)
+      , ("> (L)ogin       ", runFormL)
+      , ("> (Q)ite        ", pure ())
+      ]
+
+  -- Show Menu:
+  mapM_ (printMenuSelected n) menu_list
   clearLine
   putStr "> "
-  typeApp <- getKey
 
-  let
-    rF = do
-      putStrLn ""
-      hSetBuffering stdin LineBuffering
-      e <- registerForm users
-      if e then menuForm RNew n users else pure ()
-    lF = do
-      putStrLn ""
-      hSetBuffering stdin LineBuffering
-      e <- loginForm users
-      if e then menuForm RNew n users else pure ()
+  controlKey <- getKey
 
-  case map toUpper typeApp of
-    "\ESC[A" -> menuForm RCls (n - 1) users
-    "\ESC[B" -> menuForm RCls (n + 1) users
-    "\n"     -> case n of
-                  0 -> rF
-                  1 -> lF
-                  _ -> pure ()
-    "R"      -> rF
-    "L"      -> lF
+  case map toUpper controlKey of
+    -- Menu control
+    "\ESC[A" -> menuForm MenuClear (n - 1) users
+    "\ESC[B" -> menuForm MenuClear (n + 1) users
+    "\n"     -> snd $ (snd $ unzip menu_list) !! n
+
+    -- Hotkeys
+    "R"      -> runFormR
+    "L"      -> runFormL
     "Q"      -> putStrLn ""
-    _        -> do
-                  menuForm (RErr "!!! No command !!!") 1 users
+
+    _        -> menuForm (MenuErr "No command") n users
+
+
+
+printMenuSelected :: Int -> MenuElement -> IO ()
+printMenuSelected n (i, (s, _)) = do
+      clearLine
+      if i == n then
+        colorPrint Background Blue s
+      else
+        putStrLn s
+
+
+runForm :: [User] -> ([User] -> IO MenuOption) -> IO ()
+runForm users form = do
+      hSetBuffering stdin LineBuffering
+      putStrLn ""
+      e <- form users
+      putStrLn "\n"
+      menuForm e 0 users 
+
+
+clearMenu :: IO ()
+clearMenu = do
+  cursorUp 5
+  setCursorColumn 0
+  clearLine

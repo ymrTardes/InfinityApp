@@ -14,14 +14,15 @@ library
   exposed-modules:
       Config
       User
+      Forms
       Forms.LoginForm
       Forms.ChatForm
       Forms.MenuForm
       Forms.RegisterForm
-      Forms
 
   default-extensions:
       TypeApplications
+      OverloadedStrings
 
   build-depends:
       base >=4.7 && <5
@@ -50,6 +51,7 @@ executable infinityApp-exe
 
     default-extensions:
       TypeApplications
+      OverloadedStrings
 
     build-depends:
         base ^>=4.20.0.0

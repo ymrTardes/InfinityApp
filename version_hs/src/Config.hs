@@ -1,9 +1,8 @@
 module Config (
-    RenderOpt (..)
+    MenuOption (..)
 
   , usersPath
   , chatPath
-  , showHelp
 
   , getKey
   , colorPrint
@@ -13,7 +12,6 @@ module Config (
 
   , mSplit
 
-  , checkAge
   , validateLogin
   )
 where
@@ -23,25 +21,14 @@ import System.IO
 import System.Console.ANSI
 import Data.Char (isLetter)
 
-data RenderOpt = RCls | RNew | RErr String
-  deriving Show
+
+data MenuOption = MenuClear | MenuNew | MenuErr String | MenuClose
+  deriving (Eq, Show)
 
 usersPath :: FilePath
 chatPath  :: FilePath
 usersPath  = "data/users"
 chatPath   = "data/chat"
-
-showHelp :: [String]
-showHelp =  [ " [HELP]         "
-            , ":h for help"
-            , ":a for show chat"
-            , ":i for info user"
-            , ":q for exit"
-            , ":r <msg> to reverse"
-            , ":c <a> <b> to a + b"
-            , ":l <login> to search"
-            ]
-
 
 mSplit :: Eq a => a -> [a] -> [[a]]
 mSplit _  [] = [[]]
@@ -64,13 +51,10 @@ colorPrint l c msg = do
 
 titleText, errorText, successText :: String -> IO ()
 titleText   = colorPrint Background Magenta
-
 errorText   = colorPrint Foreground Red
 successText = colorPrint Foreground Green
 
 -- Usually
-checkAge :: Int -> Bool
-checkAge x = (x > 17) && (x < 80)
 
 validateLogin :: String -> Bool
 validateLogin  = and . map isLetter

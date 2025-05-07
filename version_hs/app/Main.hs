@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Main(main) where
 
 import System.IO
@@ -34,4 +32,5 @@ main = do
 
   -- print usersL
 
-  menuForm RNew 0 users
+  putStrLn ""
+  menuForm MenuNew 0 users

@@ -14,6 +14,7 @@ chatForm accountList user = do
 
   let
     msgCom = words messageData
+    cmd = map toLower (msgCom !! 0)
 
   -- Remove entereted maessage/command
   cursorUp 1
@@ -22,9 +23,11 @@ chatForm accountList user = do
   if length msgCom == 0 then
     chatForm accountList user
 
+  else if cmd == ":q" then
+    writeFile usersPath $ prepareUsers accountList
+
   else do
-    case map toLower (msgCom !! 0) of
-      ":q" -> pure ()
+    case cmd of
       ":b" -> pure ()
 
       -- Info
@@ -35,7 +38,7 @@ chatForm accountList user = do
 
       -- Actions
       ":r" -> do
-                putStr $ concat [ ulogin user, " [C]> "]
+                putStr $ concat [ ulogin user, " [R]> "]
                 case doReverse msgCom of
                   Nothing  -> errorText "Command error :r <str>"
                   Just res -> putStrLn res
@@ -48,9 +51,7 @@ chatForm accountList user = do
       _    -> do
         putStrLn $ ulogin user ++ "> " ++ messageData
 
-    case map toLower (msgCom !! 0) of
-      ":q" -> do
-                writeFile usersPath $ prepareUsers accountList
+    case cmd of
       ":b" -> do
                 successText "Bio updated"
                 let
@@ -61,6 +62,18 @@ chatForm accountList user = do
                 chatForm accountList' $ user'
 
       _    -> chatForm accountList user
+
+
+showHelp :: [String]
+showHelp =  [ " [HELP]         "
+            , ":h for help"
+            , ":a for show chat"
+            , ":i for info user"
+            , ":q for exit"
+            , ":r <msg> to reverse"
+            , ":c <a> <b> to a + b"
+            , ":l <login> to search"
+            ]
 
 
 prepareUsers :: [User] -> String
