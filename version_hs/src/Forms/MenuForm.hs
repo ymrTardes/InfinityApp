@@ -11,8 +11,9 @@ import Forms.RegisterForm
 import Forms.LoginForm
 
 type MenuElement = (Int, (String, IO ()))
+type SelectedElement = Int
 
-menuForm :: MenuOption -> Int -> [User] -> IO ()
+menuForm :: MenuOption -> SelectedElement -> AppData -> IO ()
 menuForm cls (-1) u = menuForm cls 0 u
 menuForm cls 3    u = menuForm cls 2 u
 menuForm MenuClose _ _ = pure ()
@@ -60,6 +61,12 @@ menuForm MenuNew n users = do
     _        -> menuForm (MenuErr "No command") n users
 
 
+clearMenu :: IO ()
+clearMenu = do
+  cursorUp 5
+  setCursorColumn 0
+  clearLine
+
 
 printMenuSelected :: Int -> MenuElement -> IO ()
 printMenuSelected n (i, (s, _)) = do
@@ -78,9 +85,3 @@ runForm users form = do
       putStrLn "\n"
       menuForm e 0 users 
 
-
-clearMenu :: IO ()
-clearMenu = do
-  cursorUp 5
-  setCursorColumn 0
-  clearLine

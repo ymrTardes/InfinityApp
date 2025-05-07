@@ -7,7 +7,7 @@ import Config
 
 import Forms.ChatForm
 
-registerForm :: [User] -> IO MenuOption
+registerForm :: AppData -> IO MenuOption
 registerForm accountList = do
   titleText " [REGISTRATION] "
   putStr "Login (or :q): "
@@ -45,8 +45,8 @@ registerForm accountList = do
 
       let
         usr = User 0 login (read age) ""
-      chatForm (accountList <> [usr]) usr
-      pure MenuClose
+
+      chatForm (accountList <> [usr], usr)
 
 
 checkAge :: Int -> Bool

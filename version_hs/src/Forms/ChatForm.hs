@@ -7,62 +7,60 @@ import User
 import Config
 import Control.Monad
 
-chatForm :: [User] -> User -> IO ()
-chatForm accountList user = do
+chatForm :: ([User], User) -> IO MenuOption
+chatForm appData@(accountList, _) = do
   putStr "Message (or :q): "
   messageData <- getLine
-
-  let
-    msgCom = words messageData
-    cmd = map toLower (msgCom !! 0)
 
   -- Remove entereted maessage/command
   cursorUp 1
   clearLine
 
-  if length msgCom == 0 then
-    chatForm accountList user
-
-  else if cmd == ":q" then
+  if and (zipWith (==) ":q" messageData) && length messageData == 2 then do
     writeFile usersPath $ prepareUsers accountList
+    pure MenuClose
 
   else do
-    case cmd of
-      ":b" -> pure ()
+    (accountList', user') <- commandRender (words messageData) appData
+    chatForm (accountList', user')
 
-      -- Info
-      ":h" -> mapM_ putStrLn showHelp
-      ":l" -> mapM_ (putStrLn . show) $ doList accountList msgCom
 
-      ":i" -> putStrLn $ show user
+commandRender :: [String] -> ([User], User) -> IO ([User], User)
+commandRender [] appData = pure appData
 
-      -- Actions
-      ":r" -> do
-                putStr $ concat [ ulogin user, " [R]> "]
-                case doReverse msgCom of
-                  Nothing  -> errorText "Command error :r <str>"
-                  Just res -> putStrLn res
-      ":c" -> do
-                putStr $ concat [ ulogin user, " [C]> "]
-                case doCalc msgCom of
-                  Nothing  -> errorText "Command error :c <num> <num>"
-                  Just res -> putStrLn res
+commandRender (":b":args) (accountList, user) = do
+  successText "Bio updated"
+  let
+    user' = user {ubio = unwords args}
+    bacc  = break (==user) accountList
+    accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
 
-      _    -> do
-        putStrLn $ ulogin user ++ "> " ++ messageData
+  pure (accountList', user')
 
-    case cmd of
-      ":b" -> do
-                successText "Bio updated"
-                let
-                  user' = user {ubio = (unwords $ drop 1 msgCom)}
-                  bacc  = break (==user) accountList
-                  accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
+commandRender (cmd:args) (accountList,user) = do
+  case cmd of
+    -- Info
+    ":h" -> mapM_ putStrLn showHelp
+    ":l" -> mapM_ (putStrLn . show) $ doList accountList args
 
-                chatForm accountList' $ user'
+    ":i" -> putStrLn $ show user
 
-      _    -> chatForm accountList user
+    -- Actions
+    ":r" -> do
+              putStr $ concat [ ulogin user, " [R]> "]
+              case doReverse args of
+                Nothing  -> errorText "Command error :r <str>"
+                Just res -> putStrLn res
+    ":c" -> do
+              putStr $ concat [ ulogin user, " [C]> "]
+              case doCalc args of
+                Nothing  -> errorText "Command error :c <num> <num>"
+                Just res -> putStrLn res
 
+    -- Just message
+    _    -> putStrLn $ ulogin user ++ "> " ++ unwords (cmd:args)
+
+  pure (accountList, user)
 
 showHelp :: [String]
 showHelp =  [ " [HELP]         "
@@ -72,29 +70,27 @@ showHelp =  [ " [HELP]         "
             , ":q for exit"
             , ":r <msg> to reverse"
             , ":c <a> <b> to a + b"
-            , ":l <login> to search"
+            , ":l <start letters login> to search"
             ]
 
 
 prepareUsers :: [User] -> String
-prepareUsers u = concat $ map (\a -> concat [ulogin a, ";", show $ uage a, ";", ubio a, "\n"] ) u
+prepareUsers  = concat . map (\a -> concat [ulogin a, ";", show $ uage a, ";", ubio a, "\n"] )
 
 doReverse :: [String] -> Maybe String
-doReverse (_:[]) = Nothing
-doReverse x = pure $ (reverse . unwords . drop 1) x
+doReverse [] = Nothing
+doReverse x  = pure $ (reverse . unwords) x
 
 
 doCalc :: [String] -> Maybe String
-doCalc []        = Nothing
-doCalc (_:[])    = Nothing
-doCalc (_:_:[])  = Nothing
-doCalc (_:a:b:_) = do
+doCalc []      = Nothing
+doCalc (_:[])  = Nothing
+doCalc (a:b:_) = do
   guard $ and $ map (isDigit) a
   guard $ and $ map (isDigit) b
   pure $ show @Int $ read a + read b
 
 
-doList :: [User] -> [[Char]] -> [User]
-doList accountList msgCom | length msgCom /= 1 =
-                              filter (and . zipWith (==) (msgCom !! 1) . ulogin) $ accountList
-                          | otherwise = accountList
+doList :: [User] -> [String] -> [User]
+doList accountList [] = accountList
+doList accountList (stName:_) = filter (and . zipWith (==) stName . ulogin) $ accountList

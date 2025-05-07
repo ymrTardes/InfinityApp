@@ -5,7 +5,7 @@ import Config
 
 import Forms.ChatForm
 
-loginForm :: [User] -> IO MenuOption
+loginForm :: AppData -> IO MenuOption
 loginForm accountList = do
   titleText " [LOGIN]        "
   putStr "Login (or :q): "
@@ -20,7 +20,6 @@ loginForm accountList = do
     successText $ "Login success"
 
     titleText " [CHAT]         "
-    chatForm accountList (findUser !! 0)
-    pure MenuClose
+    chatForm (accountList, findUser !! 0)
   else do
     pure $ MenuErr "No account"

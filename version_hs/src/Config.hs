@@ -1,5 +1,6 @@
 module Config (
     MenuOption (..)
+  , AppData
 
   , usersPath
   , chatPath
@@ -21,9 +22,13 @@ import System.IO
 import System.Console.ANSI
 import Data.Char (isLetter)
 
+import User
+
 
 data MenuOption = MenuClear | MenuNew | MenuErr String | MenuClose
   deriving (Eq, Show)
+
+type AppData = [User]
 
 usersPath :: FilePath
 chatPath  :: FilePath
