@@ -63,8 +63,10 @@ def get_inp(query_msg):
 
 
 def login_only_letters(name):
-    res = list(filter(lambda l: l.isdigit(), name))
-    return len(res) != 0
+    res = list(filter(lambda l: l.isalpha(), name))
+    print(f"{res} + \n + {list(name)}")
+    return 
+
 
 
 def reverse_text(text):    
