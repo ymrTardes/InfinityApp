@@ -52,16 +52,19 @@ getLoginErrs accountList login = do
   else
     Nothing
 
+validateLogin :: String -> Bool
+validateLogin  = and . map isLetter
+
+
 
 getAgeErrs :: [Char] -> Maybe String
 getAgeErrs age = do
     if not . and $ map isDigit age then do
       pure "Age incorrect"
-    else if not . checkAge $ read age then do
+    else if not . validateAge $ read age then do
       pure "Age us not in range 18-80"
     else do
       Nothing
 
-
-checkAge :: Int -> Bool
-checkAge x = (x > 17) && (x < 80)
+validateAge :: Int -> Bool
+validateAge x = (x > 17) && (x < 80)

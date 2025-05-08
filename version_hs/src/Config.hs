@@ -12,15 +12,12 @@ module Config (
   , successText
 
   , mSplit
-
-  , validateLogin
   )
 where
 
 
 import System.IO
 import System.Console.ANSI
-import Data.Char (isLetter)
 
 import User
 
@@ -58,8 +55,3 @@ titleText, errorText, successText :: String -> IO ()
 titleText   = colorPrint Background Magenta
 errorText   = colorPrint Foreground Red
 successText = colorPrint Foreground Green
-
--- Usually
-
-validateLogin :: String -> Bool
-validateLogin  = and . map isLetter

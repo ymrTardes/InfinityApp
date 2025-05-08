@@ -33,11 +33,13 @@ menuForm MenuNew n appData = do
     runFormR = runForm appData registerForm
     runFormL = runForm appData loginForm
 
-    menu_list = zip [0..] [
+    menu_options = [
         ("> (R)egister    ", runFormR)
       , ("> (L)ogin       ", runFormL)
       , ("> (Q)ite        ", pure ())
       ]
+
+    menu_list = zip [0..] menu_options
 
   -- Show Menu:
   mapM_ (printMenuSelected n) menu_list
@@ -50,7 +52,7 @@ menuForm MenuNew n appData = do
     -- Menu control
     "\ESC[A" -> menuForm MenuClear (n - 1) appData
     "\ESC[B" -> menuForm MenuClear (n + 1) appData
-    "\n"     -> snd $ (snd $ unzip menu_list) !! n
+    "\n"     -> snd $ menu_options !! n
 
     -- Hotkeys
     "R"      -> runFormR
