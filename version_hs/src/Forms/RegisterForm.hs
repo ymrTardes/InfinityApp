@@ -8,45 +8,59 @@ import Config
 import Forms.ChatForm
 
 registerForm :: AppData -> IO MenuOption
-registerForm accountList = do
+registerForm appData@(accountList, _) = do 
   titleText " [REGISTRATION] "
+
   putStr "Login (or :q): "
   login <- getLine
 
+  case getLoginErrs accountList login of
+    Just "-" -> pure MenuNew
+    Just err -> errorText err >> registerForm appData
+    _ -> registerFormAge appData login
+
+registerFormAge :: AppData -> String -> IO MenuOption
+registerFormAge appData@(accountList, _) login = do
+  putStr "Enter age: "
+  age <- getLine
+
+  case getAgeErrs age of
+    Just err -> errorText err >> registerForm appData
+    _ -> do
+      successText "Register success"
+      -- appendFile usersPath $ concat ["\n", login, ";", age, ";"]
+
+      titleText " [CHAT]         "
+
+      let usr = User 0 login (read age) ""
+
+      chatForm (accountList <> [usr], usr)
+
+
+
+getLoginErrs :: [User] -> String -> Maybe String
+getLoginErrs accountList login = do
   let
     findUser = filter (\x -> login == ulogin x) accountList
 
-  if login == ":q" then
-    pure MenuNew
-
+  if login == ":q" then do
+    pure "-"
   else if length findUser /= 0 then do
-    errorText "Login is used"
-    registerForm accountList
+    pure "Login is used"
   else if not $ validateLogin login then do
-    errorText "Use only letters"
-    registerForm accountList
-  else do
-    putStr "Enter age: "
-    age <- getLine
+    pure "Use only letters"
+  else
+    Nothing
 
+
+getAgeErrs :: [Char] -> Maybe String
+getAgeErrs age = do
     if not . and $ map isDigit age then do
-      errorText "Age incorrect"
-      registerForm accountList
-  
+      pure "Age incorrect"
     else if not . checkAge $ read age then do
-      errorText "Age us not in range 18-80"
-      registerForm accountList
-
+      pure "Age us not in range 18-80"
     else do
-      successText "Register success"
-      -- appendFile usersPath $ concat ["\n", login, ";", age, ";"]
-  
-      titleText " [CHAT]         "
-
-      let
-        usr = User 0 login (read age) ""
-
-      chatForm (accountList <> [usr], usr)
+      Nothing
 
 
 checkAge :: Int -> Bool

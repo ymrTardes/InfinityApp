@@ -7,9 +7,7 @@ import User
 import Config
 import Control.Monad
 
-type ChatData = ([User], User)
-
-chatForm :: ChatData -> IO MenuOption
+chatForm :: AppData -> IO MenuOption
 chatForm appData@(accountList, _) = do
   putStr "Message (or :q): "
   messageData <- getLine
@@ -18,24 +16,26 @@ chatForm appData@(accountList, _) = do
   cursorUp 1
   clearLine
 
-  if ":q" == messageData then do
+  if messageData == ":q" then do
     writeFile usersPath $ prepareUsers accountList
     pure MenuClose
   else do
-    (accountList', user') <- commandRender (words messageData) appData
-    chatForm (accountList', user')
+    appData' <- commandRender (words messageData) appData
+    chatForm appData'
 
 
-commandRender :: [String] -> ChatData -> IO ChatData
+commandRender :: [String] -> AppData -> IO AppData
 commandRender [] appData = pure appData
+
 commandRender (":b":args) (accountList, user) = do
   successText "Bio updated"
   let
     user' = user {ubio = unwords args}
     bacc  = break (==user) accountList
     accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
-
   pure (accountList', user')
+
+-- No changed data
 commandRender (cmd:args) (accountList, user) = do
   case cmd of
     -- Info

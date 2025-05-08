@@ -1,6 +1,7 @@
 module User (
     User(..)
   , prepareUsers
+  , defUser
   )
 where
 
@@ -18,6 +19,9 @@ data User = User {
 instance FromRow User where
   fromRow = User <$> field <*> field <*> field <*> field
 
+
+defUser :: User
+defUser = User 0 "" 0 ""
 
 prepareUsers :: [User] -> String
 prepareUsers  = concat . map (\a -> concat [ulogin a, ";", show $ uage a, ";", ubio a, "\n"] )

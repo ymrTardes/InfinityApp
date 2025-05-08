@@ -4,7 +4,6 @@ import System.IO
 import System.Console.ANSI
 import Data.Char
 
-import User
 import Config
 
 import Forms.RegisterForm
@@ -17,22 +16,22 @@ menuForm :: MenuOption -> SelectedElement -> AppData -> IO ()
 menuForm cls (-1) u = menuForm cls 0 u
 menuForm cls 3    u = menuForm cls 2 u
 menuForm MenuClose _ _ = pure ()
-menuForm (MenuErr msg) n users  = do
+menuForm (MenuErr msg) n appData  = do
                                     clearMenu
                                     putStr "Error: "
                                     errorText msg
-                                    menuForm MenuNew n users
-menuForm MenuClear n users      = do
+                                    menuForm MenuNew n appData
+menuForm MenuClear n appData      = do
                                     clearMenu
                                     putStrLn ""
-                                    menuForm MenuNew n users
-menuForm MenuNew n users = do
+                                    menuForm MenuNew n appData
+menuForm MenuNew n appData = do
   hSetBuffering stdin NoBuffering
   titleText " [APP]          "
 
   let
-    runFormR = runForm users registerForm
-    runFormL = runForm users loginForm
+    runFormR = runForm appData registerForm
+    runFormL = runForm appData loginForm
 
     menu_list = zip [0..] [
         ("> (R)egister    ", runFormR)
@@ -49,8 +48,8 @@ menuForm MenuNew n users = do
 
   case map toUpper controlKey of
     -- Menu control
-    "\ESC[A" -> menuForm MenuClear (n - 1) users
-    "\ESC[B" -> menuForm MenuClear (n + 1) users
+    "\ESC[A" -> menuForm MenuClear (n - 1) appData
+    "\ESC[B" -> menuForm MenuClear (n + 1) appData
     "\n"     -> snd $ (snd $ unzip menu_list) !! n
 
     -- Hotkeys
@@ -58,7 +57,7 @@ menuForm MenuNew n users = do
     "L"      -> runFormL
     "Q"      -> putStrLn ""
 
-    _        -> menuForm (MenuErr "No command") n users
+    _        -> menuForm (MenuErr "No command") n appData
 
 
 clearMenu :: IO ()
@@ -77,11 +76,11 @@ printMenuSelected n (i, (s, _)) = do
         putStrLn s
 
 
-runForm :: [User] -> ([User] -> IO MenuOption) -> IO ()
-runForm users form = do
+runForm :: AppData -> (AppData -> IO MenuOption) -> IO ()
+runForm appData form = do
       hSetBuffering stdin LineBuffering
       putStrLn ""
-      e <- form users
+      e <- form appData
       putStrLn "\n"
-      menuForm e 0 users 
+      menuForm e 0 appData 
 

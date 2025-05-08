@@ -28,7 +28,7 @@ import User
 data MenuOption = MenuClear | MenuNew | MenuErr String | MenuClose
   deriving (Eq, Show)
 
-type AppData = [User]
+type AppData = ([User], User)
 
 usersPath :: FilePath
 chatPath  :: FilePath

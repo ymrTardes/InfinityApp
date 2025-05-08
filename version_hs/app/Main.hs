@@ -24,7 +24,7 @@ main = do
 
   hSetBuffering stdout NoBuffering
   
-  usersS <- readFile usersPath
+  usersS <- readFile' usersPath
   let
     usersL = filter (/= []) $ lines usersS
     uSplit = mSplit ';'
@@ -33,4 +33,4 @@ main = do
   -- print usersL
 
   putStrLn ""
-  menuForm MenuNew 0 users
+  menuForm MenuNew 0 (users, defUser)
