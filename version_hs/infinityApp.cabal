@@ -1,7 +1,7 @@
 cabal-version:      3.0
 
 name:               infinityApp
-version:            0.1.0.0
+version:            0.1.1.0
 license:            BSD-3-Clause
 author:             homaander
 maintainer:         hom.ander23@gmail.com
@@ -14,14 +14,14 @@ library
   exposed-modules:
       Config
       User
-      Forms.LoginForm
-      Forms.ChatForm
-      Forms.MenuForm
-      Forms.RegisterForm
-      Forms
+      Forms.Menu
+      Forms.Register
+      Forms.Login
+      Forms.Chat
 
   default-extensions:
       TypeApplications
+      OverloadedStrings
 
   build-depends:
       base >=4.7 && <5
@@ -50,6 +50,7 @@ executable infinityApp-exe
 
     default-extensions:
       TypeApplications
+      OverloadedStrings
 
     build-depends:
         base ^>=4.20.0.0

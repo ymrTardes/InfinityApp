@@ -1,37 +1,40 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Main(main) where
 
 import System.IO
 
+-- import Database.SQLite.Simple
+import System.Console.ANSI
+
+
 import User
 import Config
-import Forms
+import Forms.Menu
 
-import Database.SQLite.Simple
-
+import Control.Exception
 
 main :: IO ()
 main = do
+  hSetBuffering stdout NoBuffering
 
-  -- SSS
-  conn <- open "../infinityApp.db"
-
+  -- DB
+  -- conn <- open "../infinityApp.db"
   -- execute conn "INSERT INTO users (name, age, bio) VALUES (?, ?, ?)"
   --   ("UU" :: String, 24 :: Int, "ds" :: String)
-  r <- query_ conn "SELECT * from users" :: IO [User]
-  mapM_ print r
-  close conn
-  -- SSS
+  -- usersDB <- query_ conn "SELECT * from users" :: IO [User]
+  -- mapM_ print usersDB
+  -- close conn
+  -- /DB
 
-  hSetBuffering stdout NoBuffering
-  
-  usersS <- readFile usersPath
+  usersRaw <- readFile' usersPath
   let
-    usersL = filter (/= []) $ lines usersS
-    uSplit = mSplit ';'
-    users  = map (\usr -> User 0 (uSplit usr !! 0) (read $ uSplit usr !! 1) (uSplit usr !! 2)) usersL
+    users = map strToUser  $ filter (/= []) $ lines usersRaw
 
-  -- print usersL
 
-  menuForm RNew 0 users
+  bracket_
+    useAlternateScreenBuffer
+    useNormalScreenBuffer 
+    $ do
+      _ <- menuForm 0 FormClear (users, defUser)
+      pure ()
+
+  -- catch (menuForm 0 FormClear (users, defUser) >> pure ()) (\e -> print (e :: AsyncException))
