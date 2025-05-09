@@ -63,9 +63,11 @@ def get_inp(query_msg):
 
 
 def login_only_letters(name):
-    res = list(filter(lambda l: l.isalpha(), name))
-    print(f"{res} + \n + {list(name)}")
-    return 
+    # res = list(filter(lambda l: l.isalpha(), name))
+    # print(f"{res} + \n + {list(name)}")
+    # return 
+    res = name.isalpha()
+    return res
 
 
 
