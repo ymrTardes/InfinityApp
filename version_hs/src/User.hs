@@ -1,6 +1,7 @@
 module User (
     User(..)
-  , prepareUsers
+  , usersToStr
+  , strToUsers
   , defUser
   )
 where
@@ -23,5 +24,14 @@ instance FromRow User where
 defUser :: User
 defUser = User 0 "" 0 ""
 
-prepareUsers :: [User] -> String
-prepareUsers  = concat . map (\a -> concat [ulogin a, ";", show $ uage a, ";", ubio a, "\n"] )
+usersToStr :: [User] -> [String]
+usersToStr  = map (\a -> concat [ulogin a, ";", show $ uage a, ";", ubio a] )
+
+strToUsers :: [String] -> [User]
+strToUsers = map (\usr -> User 0 (uSplit usr !! 0) (read $ uSplit usr !! 1) (uSplit usr !! 2))
+  where
+    uSplit = mSplit ';'
+
+mSplit :: Eq a => a -> [a] -> [[a]]
+mSplit _  [] = [[]]
+mSplit c arr = takeWhile (/=c) arr : mSplit c (drop 1 $ dropWhile (/= c) arr)

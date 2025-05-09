@@ -10,24 +10,27 @@ import Forms.RegisterForm
 import Forms.LoginForm
 
 type MenuElement = (Int, (String, IO ()))
-type SelectedElement = Int
 
-menuForm :: MenuOption -> SelectedElement -> AppData -> IO ()
+menuForm :: MenuOption -> Int -> AppData -> IO ()
 menuForm cls (-1) u = menuForm cls 0 u
 menuForm cls 3    u = menuForm cls 2 u
+
+-- Close menu
 menuForm MenuClose _ _ = pure ()
+-- Error menu
 menuForm (MenuErr msg) n appData  = do
-                                    clearMenu
-                                    putStr "Error: "
-                                    errorText msg
-                                    menuForm MenuNew n appData
+                                      clearMenu
+                                      putStr "Error: "
+                                      putStrLn $ errorText msg
+                                      menuForm MenuNew n appData
+-- Update menu
 menuForm MenuClear n appData      = do
-                                    clearMenu
-                                    putStrLn ""
-                                    menuForm MenuNew n appData
-menuForm MenuNew n appData = do
-  hSetBuffering stdin NoBuffering
-  titleText " [APP]          "
+                                      clearMenu
+                                      putStrLn ""
+                                      menuForm MenuNew n appData
+-- New menu
+menuForm MenuNew n appData        = do
+  putStrLn $ titleText " [APP]          "
 
   let
     runFormR = runForm appData registerForm
@@ -46,12 +49,14 @@ menuForm MenuNew n appData = do
   clearLine
   putStr "> "
 
+  hSetBuffering stdin NoBuffering
   controlKey <- getKey
+  hSetBuffering stdin LineBuffering
 
   case map toUpper controlKey of
     -- Menu control
-    "\ESC[A" -> menuForm MenuClear (n - 1) appData
-    "\ESC[B" -> menuForm MenuClear (n + 1) appData
+    "A[\ESC" -> menuForm MenuClear (n - 1) appData
+    "B[\ESC" -> menuForm MenuClear (n + 1) appData
     "\n"     -> snd $ menu_options !! n
 
     -- Hotkeys
@@ -73,14 +78,13 @@ printMenuSelected :: Int -> MenuElement -> IO ()
 printMenuSelected n (i, (s, _)) = do
       clearLine
       if i == n then
-        colorPrint Background Blue s
+        putStrLn $ colorPrint Background Blue s
       else
         putStrLn s
 
 
-runForm :: AppData -> (AppData -> IO MenuOption) -> IO ()
+runForm :: AppData -> Form -> IO ()
 runForm appData form = do
-      hSetBuffering stdin LineBuffering
       putStrLn ""
       e <- form appData
       putStrLn "\n"

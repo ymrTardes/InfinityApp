@@ -7,7 +7,7 @@ import User
 import Config
 import Control.Monad
 
-chatForm :: AppData -> IO MenuOption
+chatForm :: Form
 chatForm appData@(accountList, _) = do
   putStr "Message (or :q): "
   messageData <- getLine
@@ -17,7 +17,7 @@ chatForm appData@(accountList, _) = do
   clearLine
 
   if messageData == ":q" then do
-    writeFile usersPath $ prepareUsers accountList
+    writeFile usersPath $ unlines $ usersToStr accountList
     pure MenuClose
   else do
     appData' <- commandRender (words messageData) appData
@@ -28,7 +28,7 @@ commandRender :: [String] -> AppData -> IO AppData
 commandRender [] appData = pure appData
 
 commandRender (":b":args) (accountList, user) = do
-  successText "Bio updated"
+  putStrLn $ successText "Bio updated"
   let
     user' = user {ubio = unwords args}
     bacc  = break (==user) accountList
@@ -40,7 +40,10 @@ commandRender (cmd:args) (accountList, user) = do
   case cmd of
     -- Info
     ":h" -> mapM_ putStrLn showHelp
-    ":l" -> mapM_ (putStrLn . show) $ doList accountList args
+    ":l" -> do
+      let res = doList accountList args
+      putStrLn . successText $ "Complited search: " <> show (length res)
+      mapM_ (putStrLn . show) $ res
     ":i" -> putStrLn $ show user
 
     -- Actions
@@ -69,7 +72,7 @@ runAction :: User -> Maybe String -> String -> String -> IO ()
 runAction user fRes logo errMsg = do
               putStr $ concat [ ulogin user, " [", logo, "]> "]
               case fRes of
-                Nothing  -> errorText errMsg
+                Nothing  -> putStrLn $ errorText errMsg
                 Just res -> putStrLn res
 
 

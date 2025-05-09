@@ -7,30 +7,30 @@ import Config
 
 import Forms.ChatForm
 
-registerForm :: AppData -> IO MenuOption
+registerForm :: Form
 registerForm appData@(accountList, _) = do 
-  titleText " [REGISTRATION] "
+  putStrLn $ titleText " [REGISTRATION] "
 
   putStr "Login (or :q): "
   login <- getLine
 
   case getLoginErrs accountList login of
     Just "-" -> pure MenuNew
-    Just err -> errorText err >> registerForm appData
-    _ -> registerFormAge appData login
+    Just err -> putStrLn (errorText err) >> registerForm appData
+    _ -> registerFormAge login appData
 
-registerFormAge :: AppData -> String -> IO MenuOption
-registerFormAge appData@(accountList, _) login = do
-  putStr "Enter age: "
+registerFormAge :: String ->  Form
+registerFormAge login appData@(accountList, _) = do
+  putStr "Age: "
   age <- getLine
 
   case getAgeErrs age of
-    Just err -> errorText err >> registerForm appData
+    Just err -> putStrLn (errorText err) >> registerForm appData
     _ -> do
-      successText "Register success"
+      putStrLn $ successText "Register success"
       -- appendFile usersPath $ concat ["\n", login, ";", age, ";"]
 
-      titleText " [CHAT]         "
+      putStrLn $ titleText " [CHAT]         "
 
       let usr = User 0 login (read age) ""
 
@@ -67,4 +67,4 @@ getAgeErrs age = do
       Nothing
 
 validateAge :: Int -> Bool
-validateAge x = (x > 17) && (x < 80)
+validateAge age = (age > 17) && (age < 80)

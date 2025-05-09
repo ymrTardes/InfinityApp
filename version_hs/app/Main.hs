@@ -11,26 +11,22 @@ import Database.SQLite.Simple
 
 main :: IO ()
 main = do
+  hSetBuffering stdout NoBuffering
 
-  -- SSS
+  -- DB
   conn <- open "../infinityApp.db"
 
   -- execute conn "INSERT INTO users (name, age, bio) VALUES (?, ?, ?)"
   --   ("UU" :: String, 24 :: Int, "ds" :: String)
-  r <- query_ conn "SELECT * from users" :: IO [User]
-  mapM_ print r
+  usersDB <- query_ conn "SELECT * from users" :: IO [User]
+  mapM_ print usersDB
   close conn
-  -- SSS
+  -- /DB
 
-  hSetBuffering stdout NoBuffering
-  
-  usersS <- readFile' usersPath
+  usersRaw <- readFile' usersPath
+
   let
-    usersL = filter (/= []) $ lines usersS
-    uSplit = mSplit ';'
-    users  = map (\usr -> User 0 (uSplit usr !! 0) (read $ uSplit usr !! 1) (uSplit usr !! 2)) usersL
-
-  -- print usersL
+    users = strToUsers  $ filter (/= []) $ lines usersRaw
 
   putStrLn ""
   menuForm MenuNew 0 (users, defUser)

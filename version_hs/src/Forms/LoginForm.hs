@@ -5,9 +5,9 @@ import Config
 
 import Forms.ChatForm
 
-loginForm :: AppData -> IO MenuOption
+loginForm :: Form
 loginForm (accountList, _) = do
-  titleText " [LOGIN]        "
+  putStrLn $ titleText " [LOGIN]        "
   putStr "Login (or :q): "
   login <- getLine
 
@@ -20,7 +20,7 @@ loginForm (accountList, _) = do
     pure $ MenuErr "No account"
 
   else do
-    successText $ "Login success"
+    putStrLn $ successText $ "Login success"
 
-    titleText " [CHAT]         "
+    putStrLn $ titleText " [CHAT]         "
     chatForm $ (accountList, findUser !! 0)

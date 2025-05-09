@@ -1,6 +1,7 @@
 module Config (
     MenuOption (..)
   , AppData
+  , Form
 
   , usersPath
   , chatPath
@@ -10,8 +11,6 @@ module Config (
   , titleText
   , errorText
   , successText
-
-  , mSplit
   )
 where
 
@@ -26,32 +25,26 @@ data MenuOption = MenuClear | MenuNew | MenuErr String | MenuClose
   deriving (Eq, Show)
 
 type AppData = ([User], User)
+type Form = AppData -> IO MenuOption
 
 usersPath :: FilePath
 chatPath  :: FilePath
 usersPath  = "data/users"
 chatPath   = "data/chat"
 
-mSplit :: Eq a => a -> [a] -> [[a]]
-mSplit _  [] = [[]]
-mSplit c arr = takeWhile (/=c) arr : mSplit c (drop 1 $ dropWhile (/= c) arr)
-
 getKey :: IO [Char]
-getKey = reverse <$> getKey' ""
+getKey = getKey' ""
   where 
     getKey' chars = do
       char <- getChar
       more <- hReady stdin
       (if more then getKey' else return) (char:chars)
 
-colorPrint :: ConsoleLayer -> Color -> String -> IO ()
-colorPrint l c msg = do
-  setSGR [SetColor l Vivid c]
-  putStr msg
-  setSGR [Reset]
-  putStrLn ""
+colorPrint :: ConsoleLayer -> Color -> String -> String
+colorPrint l c msg =
+  setSGRCode [SetColor l Vivid c] <> msg <> setSGRCode [Reset]
 
-titleText, errorText, successText :: String -> IO ()
+titleText, errorText, successText :: String -> String
 titleText   = colorPrint Background Magenta
-errorText   = colorPrint Foreground Red
-successText = colorPrint Foreground Green
+errorText   = colorPrint Foreground     Red
+successText = colorPrint Foreground   Green
