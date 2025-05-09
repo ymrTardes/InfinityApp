@@ -70,6 +70,11 @@ def login_only_letters(name):
     return res
 
 
+def find_user_name(account_list, name_inp):
+    return list(filter(lambda usr: usr.name == name_inp, account_list))
+
+
+
 
 def reverse_text(text):    
     """
