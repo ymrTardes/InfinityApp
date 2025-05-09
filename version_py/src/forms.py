@@ -2,7 +2,6 @@ import random as rnd
 from data.words import macan_list
 from src.User import DataUser
 from src.config import *
-from src.forms import *
 
 
 
@@ -11,11 +10,13 @@ def menu_form(account_list):
     print(term.clear)
     draw_menu() # отрисовка меню с choice_menu = 0, т.е выбран первый пункт меню
     global choice_menu
-    key_i =''
-    
+    key_i = ""
+    result_forms = True
+
+
     while key_i.lower() != "q":
         with term.cbreak(), term.hidden_cursor(): # блокировка ввода пользователя, чтобы все происходило по отслеживанию нажатой кнопки
-            key_i = term.inkey(timeout=10)
+            key_i = term.inkey(timeout=10) # timeout задает переменной None через N секунд
         if not key_i:
             print(term.lavenderblush4_reverse("Ожидание ввода..."))
         elif key_i.name == "KEY_DOWN":
@@ -29,16 +30,23 @@ def menu_form(account_list):
         elif key_i.name == "KEY_ENTER":
             match choice_menu:
                 case 0:
-                    registration_form(account_list)
+                    result_forms = registration_form(account_list)
                 case 1:
-                    login_form(account_list)
+                    result_forms = login_form(account_list)
                 case 2:
-                    print(wrap_title("GG WP bOTi GOOD BYE EPTA", "*"))
-            break
+                    result_forms = False
+        # пользователь выбрал форму через нажатие R/L
         elif key_i.lower() == "r":
-            registration_form(account_list)
+            result_forms = registration_form(account_list)
         elif key_i.lower() == "l":
-            login_form(account_list)
+            result_forms = login_form(account_list)
+        
+        if result_forms:
+            print(term.clear + term.home)
+            draw_menu()
+            continue
+        else:
+            break
 
 
 def draw_menu():
@@ -56,15 +64,17 @@ def draw_menu():
 
 
 def registration_form(account_list):
+    print(term.clear + term.home)
     gui_wrapper("REGISTRATION", "*")
     while True:
         name_inp = get_inp("Назовись: (:q - выход) ")
+        if name_inp == ":q":
+            return True
+        
         find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
         if len(find_user) > 0:
             error_text("Уже есть такой педик")
             continue
-        elif name_inp == ":q":
-            return True
         elif not login_only_letters(name_inp):
             error_text("Логин должен быть без цифр")
         else:
@@ -85,11 +95,13 @@ def registration_form(account_list):
 
 
 def login_form(account_list):
+    print(term.clear + term.home)
     gui_wrapper("LOGIN", "*")
     while True:
         name_inp = get_inp("Введи имя заебал: (:q - выход) ")
         if name_inp == ":q":
             return True
+        
         find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
         if len(find_user) != 0:
             chat_form(account_list, find_user[0])

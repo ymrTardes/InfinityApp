@@ -23,11 +23,9 @@ def main():
             print("Ошибка в файле БД")
             
     try:
-        menu_form(account_list)
-        
-        print(term.normal)
+        with term.fullscreen(): # запускает буффер (Терминал поверх нынешнего)
+            menu_form(account_list)
     except KeyboardInterrupt:
-        print(term.home + term.clear)
         gui_wrapper("Завершено пользователем", "♰")
         print(term.normal)
 

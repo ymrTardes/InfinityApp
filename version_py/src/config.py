@@ -1,6 +1,6 @@
 from blessed import Terminal
 term = Terminal()
-import sys
+# import sys
 
 
 # consts
