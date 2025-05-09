@@ -4,5 +4,8 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"editor.fontSize": 15,
+		"workbench.preferredHighContrastColorTheme": "Default High Contrast"
+	}
 }
