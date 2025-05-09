@@ -1,4 +1,4 @@
-module Forms.MenuForm (menuForm) where
+module Forms.Menu (menuForm) where
 
 import System.IO
 import System.Console.ANSI
@@ -6,14 +6,14 @@ import Data.Char
 
 import Config
 
-import Forms.RegisterForm
-import Forms.LoginForm
+import Forms.Register
+import Forms.Login
 
 type MenuElement = (Int, (String, IO ()))
 
-menuForm :: MenuOption -> Int -> AppData -> IO ()
-menuForm cls (-1) u = menuForm cls 0 u
-menuForm cls 3    u = menuForm cls 2 u
+menuForm :: MenuType -> Int -> AppData -> IO ()
+menuForm cls (-1) appData = menuForm cls 0 appData
+menuForm cls 3    appData = menuForm cls 2 appData
 
 -- Close menu
 menuForm MenuClose _ _ = pure ()

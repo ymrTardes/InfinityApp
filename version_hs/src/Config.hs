@@ -1,5 +1,5 @@
 module Config (
-    MenuOption (..)
+    MenuType (..)
   , AppData
   , Form
 
@@ -14,18 +14,20 @@ module Config (
   )
 where
 
-
 import System.IO
 import System.Console.ANSI
 
 import User
 
 
-data MenuOption = MenuClear | MenuNew | MenuErr String | MenuClose
-  deriving (Eq, Show)
+
+type Form = AppData -> IO MenuType
 
 type AppData = ([User], User)
-type Form = AppData -> IO MenuOption
+
+data MenuType = MenuClear | MenuNew | MenuErr String | MenuClose
+  deriving (Eq, Show)
+
 
 usersPath :: FilePath
 chatPath  :: FilePath
@@ -39,6 +41,7 @@ getKey = getKey' ""
       char <- getChar
       more <- hReady stdin
       (if more then getKey' else return) (char:chars)
+
 
 colorPrint :: ConsoleLayer -> Color -> String -> String
 colorPrint l c msg =

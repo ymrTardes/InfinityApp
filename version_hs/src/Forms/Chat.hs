@@ -1,4 +1,4 @@
-module Forms.ChatForm (chatForm) where
+module Forms.Chat (chatForm) where
 
 import System.Console.ANSI
 import Data.Char
@@ -17,7 +17,7 @@ chatForm appData@(accountList, _) = do
   clearLine
 
   if messageData == ":q" then do
-    writeFile usersPath $ unlines $ usersToStr accountList
+    writeFile usersPath $ unlines $ map userToStr accountList
     pure MenuClose
   else do
     appData' <- commandRender (words messageData) appData

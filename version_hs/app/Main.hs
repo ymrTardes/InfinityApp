@@ -2,12 +2,11 @@ module Main(main) where
 
 import System.IO
 
-import User
-import Config
-import Forms
-
 import Database.SQLite.Simple
 
+import User
+import Config
+import Forms.Menu
 
 main :: IO ()
 main = do
@@ -24,9 +23,8 @@ main = do
   -- /DB
 
   usersRaw <- readFile' usersPath
-
   let
-    users = strToUsers  $ filter (/= []) $ lines usersRaw
+    users = map strToUser  $ filter (/= []) $ lines usersRaw
 
   putStrLn ""
   menuForm MenuNew 0 (users, defUser)

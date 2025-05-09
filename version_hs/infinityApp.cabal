@@ -14,11 +14,10 @@ library
   exposed-modules:
       Config
       User
-      Forms
-      Forms.LoginForm
-      Forms.ChatForm
-      Forms.MenuForm
-      Forms.RegisterForm
+      Forms.Menu
+      Forms.Register
+      Forms.Login
+      Forms.Chat
 
   default-extensions:
       TypeApplications

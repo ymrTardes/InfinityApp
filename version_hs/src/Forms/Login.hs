@@ -1,9 +1,9 @@
-module Forms.LoginForm (loginForm) where
+module Forms.Login (loginForm) where
 
 import User
 import Config
 
-import Forms.ChatForm
+import Forms.Chat
 
 loginForm :: Form
 loginForm (accountList, _) = do

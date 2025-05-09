@@ -1,11 +1,11 @@
-module Forms.RegisterForm (registerForm) where
+module Forms.Register (registerForm) where
 
 import Data.Char
 
 import User
 import Config
 
-import Forms.ChatForm
+import Forms.Chat
 
 registerForm :: Form
 registerForm appData@(accountList, _) = do 
