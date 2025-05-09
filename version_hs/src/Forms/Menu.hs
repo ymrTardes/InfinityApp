@@ -9,27 +9,20 @@ import Config
 import Forms.Register
 import Forms.Login
 
-type MenuElement = (Int, (String, IO ()))
+type MenuElement = (Int, (String, IO FormType))
 
-menuForm :: MenuType -> Int -> AppData -> IO ()
-menuForm cls (-1) appData = menuForm cls 0 appData
-menuForm cls 3    appData = menuForm cls 2 appData
+menuForm :: Int -> Form
+menuForm (-1) cls appData = menuForm 0 cls appData
+menuForm 3    cls appData = menuForm 2 cls appData
 
--- Close menu
-menuForm MenuClose _ _ = pure ()
--- Error menu
-menuForm (MenuErr msg) n appData  = do
-                                      clearMenu
-                                      putStr "Error: "
-                                      putStrLn $ errorText msg
-                                      menuForm MenuNew n appData
--- Update menu
-menuForm MenuClear n appData      = do
-                                      clearMenu
-                                      putStrLn ""
-                                      menuForm MenuNew n appData
--- New menu
-menuForm MenuNew n appData        = do
+menuForm _ FormClose _ = pure FormClose
+menuForm n (FormErr msg) appData  = do
+                                      formError msg
+                                      menuForm n FormNew appData
+menuForm n FormClear appData  = do
+                                  formClear
+                                  menuForm n FormNew appData
+menuForm selectedIndex FormNew appData        = do
   putStrLn $ titleText " [APP]          "
 
   let
@@ -39,13 +32,13 @@ menuForm MenuNew n appData        = do
     menu_options = [
         ("> (R)egister    ", runFormR)
       , ("> (L)ogin       ", runFormL)
-      , ("> (Q)ite        ", pure ())
+      , ("> (Q)ite        ", pure FormClose)
       ]
 
     menu_list = zip [0..] menu_options
 
   -- Show Menu:
-  mapM_ (printMenuSelected n) menu_list
+  mapM_ (printMenuSelected selectedIndex) menu_list
   clearLine
   putStr "> "
 
@@ -55,38 +48,30 @@ menuForm MenuNew n appData        = do
 
   case map toUpper controlKey of
     -- Menu control
-    "A[\ESC" -> menuForm MenuClear (n - 1) appData
-    "B[\ESC" -> menuForm MenuClear (n + 1) appData
-    "\n"     -> snd $ menu_options !! n
+    "A[\ESC" -> menuForm (selectedIndex - 1) FormClear appData
+    "B[\ESC" -> menuForm (selectedIndex + 1) FormClear appData
+    "\n"     -> snd $ menu_options !! selectedIndex
 
     -- Hotkeys
     "R"      -> runFormR
     "L"      -> runFormL
-    "Q"      -> putStrLn ""
+    "Q"      -> pure FormClose
 
-    _        -> menuForm (MenuErr "No command") n appData
-
-
-clearMenu :: IO ()
-clearMenu = do
-  cursorUp 5
-  setCursorColumn 0
-  clearLine
+    _        -> menuForm selectedIndex (FormErr "No command") appData
 
 
 printMenuSelected :: Int -> MenuElement -> IO ()
 printMenuSelected n (i, (s, _)) = do
       clearLine
-      if i == n then
-        putStrLn $ colorPrint Background Blue s
-      else
-        putStrLn s
+      putStrLn $
+        if i == n then colorPrint Background Blue s
+        else s
 
 
-runForm :: AppData -> Form -> IO ()
+runForm :: AppData -> Form -> IO FormType
 runForm appData form = do
       putStrLn ""
-      e <- form appData
+      formType <- form FormClear appData
       putStrLn "\n"
-      menuForm e 0 appData 
+      menuForm 0 formType appData 
 

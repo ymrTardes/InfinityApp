@@ -6,7 +6,15 @@ import Config
 import Forms.Chat
 
 loginForm :: Form
-loginForm (accountList, _) = do
+loginForm FormClose _ = pure FormClose
+loginForm (FormErr msg) appData = do
+                                    formError msg
+                                    loginForm FormNew appData
+loginForm FormClear appData = do
+                                formClear
+                                loginForm FormNew appData
+
+loginForm FormNew (accountList, _) = do
   putStrLn $ titleText " [LOGIN]        "
   putStr "Login (or :q): "
   login <- getLine
@@ -14,13 +22,10 @@ loginForm (accountList, _) = do
   let
     findUser = filter (\x -> login == ulogin x) accountList
 
-  if login == ":q" then pure $ MenuNew
+  if login == ":q" then pure $ FormClear
 
   else if findUser == [] then do
-    pure $ MenuErr "No account"
+    pure $ FormErr "No account"
 
   else do
-    putStrLn $ successText $ "Login success"
-
-    putStrLn $ titleText " [CHAT]         "
-    chatForm $ (accountList, findUser !! 0)
+    chatForm FormClear $ (accountList, findUser !! 0)

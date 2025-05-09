@@ -8,7 +8,17 @@ import Config
 import Control.Monad
 
 chatForm :: Form
-chatForm appData@(accountList, _) = do
+chatForm FormClose _ = pure FormClose
+chatForm (FormErr msg) appData  = do
+                                    formError msg
+                                    putStrLn $ titleText " [CHAT]         "
+                                    chatForm FormNew appData
+chatForm FormClear appData  = do
+                                formClear
+                                putStrLn $ titleText " [CHAT]         "
+                                chatForm FormNew appData
+
+chatForm FormNew appData@(accountList, _) = do
   putStr "Message (or :q): "
   messageData <- getLine
 
@@ -18,10 +28,10 @@ chatForm appData@(accountList, _) = do
 
   if messageData == ":q" then do
     writeFile usersPath $ unlines $ map userToStr accountList
-    pure MenuClose
+    pure FormClose
   else do
     appData' <- commandRender (words messageData) appData
-    chatForm appData'
+    chatForm FormNew appData'
 
 
 commandRender :: [String] -> AppData -> IO AppData

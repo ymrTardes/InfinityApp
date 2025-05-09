@@ -8,33 +8,37 @@ import Config
 import Forms.Chat
 
 registerForm :: Form
-registerForm appData@(accountList, _) = do 
+registerForm FormClose _ = pure FormClose
+registerForm (FormErr msg) appData  = do
+                                        formError msg
+                                        registerForm FormNew appData
+registerForm FormClear appData  = do
+                                    formClear
+                                    registerForm FormNew appData
+registerForm FormNew appData@(accountList, _) = do 
   putStrLn $ titleText " [REGISTRATION] "
 
   putStr "Login (or :q): "
   login <- getLine
 
   case getLoginErrs accountList login of
-    Just "-" -> pure MenuNew
-    Just err -> putStrLn (errorText err) >> registerForm appData
-    _ -> registerFormAge login appData
+    Just "-" -> pure FormNew
+    Just err -> registerForm (FormErr err) appData
+    _ -> registerFormAge login FormNew appData
 
 registerFormAge :: String ->  Form
-registerFormAge login appData@(accountList, _) = do
+registerFormAge login _ appData@(accountList, _) = do
   putStr "Age: "
   age <- getLine
 
   case getAgeErrs age of
-    Just err -> putStrLn (errorText err) >> registerForm appData
+    Just err -> registerForm (FormErr err) appData
     _ -> do
-      putStrLn $ successText "Register success"
       -- appendFile usersPath $ concat ["\n", login, ";", age, ";"]
-
-      putStrLn $ titleText " [CHAT]         "
 
       let usr = User 0 login (read age) ""
 
-      chatForm (accountList <> [usr], usr)
+      chatForm FormClear (accountList <> [usr], usr)
 
 
 

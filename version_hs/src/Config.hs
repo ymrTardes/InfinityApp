@@ -1,10 +1,13 @@
 module Config (
-    MenuType (..)
+    FormType (..)
   , AppData
   , Form
 
   , usersPath
   , chatPath
+
+  , formError
+  , formClear
 
   , getKey
   , colorPrint
@@ -21,11 +24,11 @@ import User
 
 
 
-type Form = AppData -> IO MenuType
+type Form = FormType -> AppData -> IO FormType
 
 type AppData = ([User], User)
 
-data MenuType = MenuClear | MenuNew | MenuErr String | MenuClose
+data FormType = FormNew | FormClear | FormErr String | FormClose
   deriving (Eq, Show)
 
 
@@ -41,6 +44,19 @@ getKey = getKey' ""
       char <- getChar
       more <- hReady stdin
       (if more then getKey' else return) (char:chars)
+
+formError :: String -> IO ()
+formError msg = do
+  clearScreen
+  setCursorPosition 0 0
+  putStr "Error: "
+  putStrLn $ errorText msg
+
+formClear :: IO ()
+formClear = do
+  clearScreen
+  setCursorPosition 0 0
+  putStrLn ""
 
 
 colorPrint :: ConsoleLayer -> Color -> String -> String
