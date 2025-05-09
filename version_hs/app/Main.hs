@@ -10,11 +10,11 @@ import User
 import Config
 import Forms.Menu
 
+import Control.Exception
+
 main :: IO ()
 main = do
   hSetBuffering stdout NoBuffering
-
-  useAlternateScreenBuffer
 
   -- DB
   -- conn <- open "../infinityApp.db"
@@ -29,6 +29,12 @@ main = do
   let
     users = map strToUser  $ filter (/= []) $ lines usersRaw
 
-  _ <- menuForm 0 FormClear (users, defUser)
 
-  useNormalScreenBuffer
+  bracket_
+    useAlternateScreenBuffer
+    useNormalScreenBuffer 
+    $ do
+      _ <- menuForm 0 FormClear (users, defUser)
+      pure ()
+
+  -- catch (menuForm 0 FormClear (users, defUser) >> pure ()) (\e -> print (e :: AsyncException))

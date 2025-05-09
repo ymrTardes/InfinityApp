@@ -9,5 +9,9 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"haskell.plugin.semanticTokens.globalOn": true,
+		"haskell.plugin.semanticTokens.config.dataConstructorToken": "regexp",
+		"haskell.plugin.semanticTokens.config.recordFieldToken": "parameter",
+	}
 }
