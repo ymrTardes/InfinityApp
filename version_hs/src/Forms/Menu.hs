@@ -8,6 +8,7 @@ import Config
 
 import Forms.Register
 import Forms.Login
+import Data.Maybe (fromMaybe)
 
 type MenuElement = (Int, (String, IO FormType))
 
@@ -23,23 +24,28 @@ menuForm n FormClear appData  = do
                                   formClear
                                   menuForm n FormNew appData
 menuForm selectedIndex FormNew appData        = do
-  putStrLn $ titleText " [APP]          "
+  size' <- getTerminalSize
+  let
+    size = (fromMaybe (0,0) size')
+
+  printInside $ titleText "[APP]" size
 
   let
     runFormR = runForm appData registerForm
     runFormL = runForm appData loginForm
 
     menu_options = [
-        ("> (R)egister    ", runFormR)
-      , ("> (L)ogin       ", runFormL)
-      , ("> (Q)ite        ", pure FormClose)
+        (toCenter "(R)egister" size, runFormR)
+      , (toCenter "(L)ogin"    size, runFormL)
+      , (toCenter "(Q)ite"     size, pure FormClose)
       ]
 
     menu_list = zip [0..] menu_options
 
   -- Show Menu:
   mapM_ (printMenuSelected selectedIndex) menu_list
-  clearLine
+
+  cursorForward 2
   putStr "> "
 
   hSetBuffering stdin NoBuffering
@@ -62,15 +68,13 @@ menuForm selectedIndex FormNew appData        = do
 
 printMenuSelected :: Int -> MenuElement -> IO ()
 printMenuSelected n (i, (s, _)) = do
-      clearLine
-      putStrLn $
+      printInside $
         if i == n then colorPrint Background Blue s
         else s
 
 
 runForm :: AppData -> Form -> IO FormType
 runForm appData form = do
-      putStrLn ""
       formType <- form FormClear appData
       putStrLn "\n"
       menuForm 0 formType appData 

@@ -6,25 +6,31 @@ import Data.Char
 import User
 import Config
 import Control.Monad
+import Data.Maybe
 
 chatForm :: Form
 chatForm FormClose _ = pure FormClose
 chatForm (FormErr msg) appData  = do
                                     formError msg
-                                    putStrLn $ titleText " [CHAT]         "
+                                    -- putStrLn $ titleText "[CHAT]"
                                     chatForm FormNew appData
 chatForm FormClear appData  = do
                                 formClear
-                                putStrLn $ titleText " [CHAT]         "
+                                size <- getTerminalSize
+                                printInside $ titleText "[CHAT]" (fromMaybe (0,0) size)
                                 chatForm FormNew appData
 
 chatForm FormNew appData@(accountList, _) = do
+  cursorForward 2
   putStr "Message (or :q): "
+
   messageData <- getLine
 
   -- Remove entereted maessage/command
   cursorUp 1
-  clearLine
+  cursorForward 2
+  clearFromCursorToLineEnd
+  cursorBackward 2
 
   if messageData == ":q" then do
     writeFile usersPath $ unlines $ map userToStr accountList
@@ -38,7 +44,7 @@ commandRender :: [String] -> AppData -> IO AppData
 commandRender [] appData = pure appData
 
 commandRender (":b":args) (accountList, user) = do
-  putStrLn $ successText "Bio updated"
+  printInside $ successText "Bio updated"
   let
     user' = user {ubio = unwords args}
     bacc  = break (==user) accountList
@@ -49,25 +55,25 @@ commandRender (":b":args) (accountList, user) = do
 commandRender (cmd:args) (accountList, user) = do
   case cmd of
     -- Info
-    ":h" -> mapM_ putStrLn showHelp
+    ":h" -> mapM_ printInside showHelp
     ":l" -> do
       let res = doList accountList args
-      putStrLn . successText $ "Complited search: " <> show (length res)
-      mapM_ (putStrLn . show) $ res
-    ":i" -> putStrLn $ show user
+      printInside . successText $ "Complited search: " <> show (length res)
+      mapM_ (printInside . show) $ res
+    ":i" -> printInside $ show user
 
     -- Actions
     ":r" -> runAction user (doReverse args) "R" "Command error :r <str>"
     ":c" -> runAction user (doCalc args)    "C" "Command error :c <num> <num>"
 
     -- Just message
-    _    -> putStrLn $ ulogin user ++ "> " ++ unwords (cmd:args)
+    _    -> printInside $ ulogin user ++ "> " ++ unwords (cmd:args)
 
   pure (accountList, user)
 
 
 showHelp :: [String]
-showHelp =  [ " [HELP]         "
+showHelp =  [ successText "[HELP]"
             , ":h for help"
             , ":a for show chat"
             , ":i for info user"
@@ -80,10 +86,11 @@ showHelp =  [ " [HELP]         "
 
 runAction :: User -> Maybe String -> String -> String -> IO ()
 runAction user fRes logo errMsg = do
+              cursorForward 2
               putStr $ concat [ ulogin user, " [", logo, "]> "]
               case fRes of
-                Nothing  -> putStrLn $ errorText errMsg
-                Just res -> putStrLn res
+                Nothing  -> printInside $ errorText errMsg
+                Just res -> printInside res
 
 
 doReverse :: [String] -> Maybe String
