@@ -6,10 +6,9 @@ from src.config import *
 
 
 
-def menu_form(account_list):
+def menu_form(account_list, choice_menu=0):
     print(term.clear)
-    draw_menu() # отрисовка меню с choice_menu = 0, т.е выбран первый пункт меню
-    global choice_menu
+    draw_menu(choice_menu) # отрисовка меню с choice_menu = 0, т.е выбран первый пункт меню
     key_i = ""
     result_forms = True
 
@@ -22,11 +21,11 @@ def menu_form(account_list):
         elif key_i.name == "KEY_DOWN":
             if choice_menu != 2:
                 choice_menu += 1
-            draw_menu()
+            draw_menu(choice_menu)
         elif key_i.name == "KEY_UP":
             if choice_menu != 0:
                 choice_menu -= 1
-            draw_menu()
+            draw_menu(choice_menu)
         elif key_i.name == "KEY_ENTER":
             match choice_menu:
                 case 0:
@@ -43,13 +42,13 @@ def menu_form(account_list):
         
         if result_forms:
             print(term.clear + term.home)
-            draw_menu()
+            draw_menu(choice_menu)
             continue
         else:
             break
 
 
-def draw_menu():
+def draw_menu(choice_menu):
     """
     отрисовка меню
     выделаяет цветом тот элемент, индекс которого совпадает с choice_menu
@@ -63,7 +62,7 @@ def draw_menu():
             print(menu_form_elements[i])
 
 
-def registration_form(account_list):
+def registration_form(account_list: list):
     print(term.clear + term.home)
     gui_wrapper("REGISTRATION", "*")
     while True:
@@ -71,7 +70,7 @@ def registration_form(account_list):
         if name_inp == ":q":
             return True
         
-        find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
+        find_user = find_user = find_user_name(account_list, name_inp)
         if len(find_user) > 0:
             error_text("Уже есть такой педик")
             continue
@@ -81,10 +80,11 @@ def registration_form(account_list):
             try:
                 age_inp = int(get_inp("Скок по земле ходишь епта: "))
                 if check_age(age_inp):
-                    print("Регистрация прошла заебок")
+                    user = DataUser(name_inp, age_inp)
                     with open(path_bd, "a") as file:
-                        file.write(f"\n{name_inp}; {age_inp};")
-                    chat_form(account_list, DataUser(name_inp, age_inp))
+                        file.write(f"{name_inp}; {age_inp}; {user.bio}\n")
+                    account_list.append(user)
+                    chat_form(account_list, user)
                     return False
                 else:
                     error_text("Возраст должен быть от 18 до 80")
@@ -102,7 +102,7 @@ def login_form(account_list):
         if name_inp == ":q":
             return True
         
-        find_user = list(filter(lambda usr: usr.name == name_inp, account_list))
+        find_user = find_user_name(account_list, name_inp)
         if len(find_user) != 0:
             chat_form(account_list, find_user[0])
             return False
@@ -112,6 +112,7 @@ def login_form(account_list):
 
 
 def chat_form(account_list, user):
+    print(term.clear + term.home)
     gui_wrapper("CHAT", "*")
     print(f"Hello {user.name}")
     while True:
@@ -120,6 +121,12 @@ def chat_form(account_list, user):
         # сообщение юзера разбитое на список
         match split_message[0].lower() if split_message else None:
             case ":q":
+                try:
+                    with open(path_bd, "w") as file:
+                        for i in account_list:
+                            file.write(f"{i.name}; {i.age}; {i.bio}\n")
+                except Exception as e:
+                    print(f"Не ломай файл >>> {e}")
                 return True
             case ":h":
                 print(out_help())
@@ -136,7 +143,7 @@ def chat_form(account_list, user):
                 print(f"Me >>> {user.name}, {user.age}, {user.bio}")
             case ":b":
                 run_edit_bio(split_message, user)
-                print(f"Me >>> {user.name}, {user.age}, {user.bio}")
+                print(user)
             case "\n":
                 error_text("Сообщение пустое")
             case _: # Любой другой случай
@@ -145,7 +152,8 @@ def chat_form(account_list, user):
 
 
 def run_edit_bio(split_message, user):
-    pass
+    bio_str = " ".join(split_message[1:])
+    user.set_bio(bio_str)
 
 
 def run_list_users(split_message, account_list):

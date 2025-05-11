@@ -17,7 +17,7 @@ help_text = [
 
 
 menu_form_elements = ["REGISTRATION (R)", "LOGIN (L)", "Press 'q' to Quit."]
-choice_menu = 0 # нужна для отрисовки какой пункт меню выбран в >>> draw_menu()
+# choice_menu = 0 # нужна для отрисовки какой пункт меню выбран в >>> draw_menu()
 
 
 path_bd = "version_py/data/users.txt"
@@ -68,6 +68,11 @@ def login_only_letters(name):
     # return 
     res = name.isalpha()
     return res
+
+
+def find_user_name(account_list, name_inp):
+    return list(filter(lambda usr: usr.name == name_inp, account_list))
+
 
 
 

@@ -16,11 +16,12 @@ def main():
 
         try:
             for usr in users_lines:
-                user_atrib = DataUser(usr[0].strip(), usr[1].strip())
-                user_atrib.set_bio(usr[2].strip())
-                account_list.append(user_atrib)
-        except:
-            print("Ошибка в файле БД")
+                if len(usr[0]) != 0:
+                    user_atrib = DataUser(usr[0].strip(), usr[1].strip())
+                    user_atrib.set_bio(usr[2].strip())
+                    account_list.append(user_atrib)
+        except Exception as e:
+            print("Ошибка в файле БД >>> {e}")
             
     try:
         with term.fullscreen(): # запускает буффер (Терминал поверх нынешнего)
