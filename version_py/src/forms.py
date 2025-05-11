@@ -6,10 +6,9 @@ from src.config import *
 
 
 
-def menu_form(account_list):
+def menu_form(account_list, choice_menu=0):
     print(term.clear)
-    draw_menu() # отрисовка меню с choice_menu = 0, т.е выбран первый пункт меню
-    global choice_menu
+    draw_menu(choice_menu) # отрисовка меню с choice_menu = 0, т.е выбран первый пункт меню
     key_i = ""
     result_forms = True
 
@@ -22,11 +21,11 @@ def menu_form(account_list):
         elif key_i.name == "KEY_DOWN":
             if choice_menu != 2:
                 choice_menu += 1
-            draw_menu()
+            draw_menu(choice_menu)
         elif key_i.name == "KEY_UP":
             if choice_menu != 0:
                 choice_menu -= 1
-            draw_menu()
+            draw_menu(choice_menu)
         elif key_i.name == "KEY_ENTER":
             match choice_menu:
                 case 0:
@@ -43,13 +42,13 @@ def menu_form(account_list):
         
         if result_forms:
             print(term.clear + term.home)
-            draw_menu()
+            draw_menu(choice_menu)
             continue
         else:
             break
 
 
-def draw_menu():
+def draw_menu(choice_menu):
     """
     отрисовка меню
     выделаяет цветом тот элемент, индекс которого совпадает с choice_menu

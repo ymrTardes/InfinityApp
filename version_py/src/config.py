@@ -17,7 +17,7 @@ help_text = [
 
 
 menu_form_elements = ["REGISTRATION (R)", "LOGIN (L)", "Press 'q' to Quit."]
-choice_menu = 0 # нужна для отрисовки какой пункт меню выбран в >>> draw_menu()
+# choice_menu = 0 # нужна для отрисовки какой пункт меню выбран в >>> draw_menu()
 
 
 path_bd = "version_py/data/users.txt"
