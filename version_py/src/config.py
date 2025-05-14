@@ -17,7 +17,6 @@ help_text = [
 
 
 menu_form_elements = ["REGISTRATION (R)", "LOGIN (L)", "Press 'q' to Quit."]
-# choice_menu = 0 # нужна для отрисовки какой пункт меню выбран в >>> draw_menu()
 
 
 path_bd = "version_py/data/users.txt"
@@ -26,7 +25,6 @@ path_bd = "version_py/data/users.txt"
 # UI functions
 def gui_wrapper(title, sub_char=" "):
     title_text = wrap_title(title, sub_char)
-    # print(f"{term.home}{term.on_brown2}{term.deepskyblue2}{term.clear}{term.move_down(1)}{title_text}")
     print(term.move_down(3) + title_text)
 
 
@@ -63,9 +61,6 @@ def get_inp(query_msg):
 
 
 def login_only_letters(name):
-    # res = list(filter(lambda l: l.isalpha(), name))
-    # print(f"{res} + \n + {list(name)}")
-    # return 
     res = name.isalpha()
     return res
 
@@ -79,6 +74,8 @@ def find_user_name(account_list, name_inp):
 def reverse_text(text):    
     """
     инвертированное сообщение
+    берется строка после :r
+    и инвертируется
     """
     text = " ".join(text[1::])
     print(text[::-1].strip())
