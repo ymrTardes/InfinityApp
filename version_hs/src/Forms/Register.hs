@@ -7,7 +7,6 @@ import Config
 
 import Forms.Chat
 import System.Console.ANSI
-import Data.Maybe
 
 registerForm :: Form
 registerForm FormClose _ = pure FormClose
@@ -18,10 +17,9 @@ registerForm FormClear appData  = do
                                     formClear
                                     registerForm FormNew appData
 registerForm FormNew appData@(accountList, _) = do
-  size <- getTerminalSize
-  cursorForward 2
-  printInside $ titleText "[REGISTRATION]" (fromMaybe (0,0) size)
+  printMain $ titleText "[REGISTRATION]"
 
+  cursorForward 2
   putStr "Login (or :q): "
   login <- getLine
 

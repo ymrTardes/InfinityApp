@@ -5,7 +5,6 @@ import Config
 
 import Forms.Chat
 import System.Console.ANSI
-import Data.Maybe
 
 loginForm :: Form
 loginForm FormClose _ = pure FormClose
@@ -17,8 +16,7 @@ loginForm FormClear appData = do
                                 loginForm FormNew appData
 
 loginForm FormNew (accountList, _) = do
-  size <- getTerminalSize
-  printInside $ titleText "[LOGIN]" (fromMaybe (0,0) size)
+  printMain $ titleText "[LOGIN]"
 
   cursorForward 2
   putStr "Login (or :q): "

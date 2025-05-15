@@ -8,20 +8,20 @@ module Config (
 
   , formError
   , formClear
+  , tSize
 
-  , getKey
   , colorPrint
   , errorText
   , successText
 
-  , printInside
+  , printMain
+  , printSecond
 
   , titleText
-  , toCenter
+  , centerMain
   )
 where
 
-import System.IO
 import System.Console.ANSI
 
 import User
@@ -43,27 +43,32 @@ chatPath  :: FilePath
 usersPath  = "data/users"
 chatPath   = "data/chat"
 
-getKey :: IO [Char]
-getKey = getKey' ""
-  where 
-    getKey' chars = do
-      char <- getChar
-      more <- hReady stdin
-      (if more then getKey' else return) (char:chars)
-
-printInside :: String -> IO ()
-printInside str = do
+printMain :: String -> IO ()
+printMain str = do
   cursorForward 2
-  putStrLn str
+  putStr str
+  cursorDownLine 1
+
+printSecond :: String -> IO ()
+printSecond str = do
+  cursorForward 36
+  putStr str
+  cursorDownLine 1
+
 
 formError :: String -> IO ()
 formError msg = do
   setCursorPosition 0 0
   clearScreen
   drawAll
-  setCursorPosition 1 1
+  setCursorPosition 1 2
   putStr "Error: "
   putStrLn $ errorText msg
+
+tSize :: IO (Int, Int)
+tSize = do
+  size' <- getTerminalSize
+  pure $ fromMaybe (0,0) size'
 
 formClear :: IO ()
 formClear = do
@@ -75,12 +80,10 @@ formClear = do
 
 drawAll :: IO ()
 drawAll = do
-  size' <- getTerminalSize
-  let
-    (y,x) = fromMaybe (0,0) size'
+  (y,x) <- tSize
   putStrLn $ replicate x '='
   replicateM_ (y - 3) $
-    putStrLn $ concat ["|", replicate (x -2) ' ', "|"]
+    putStrLn $ concat ["|", replicate 32 ' ' , "|" ,  replicate (x - 35) ' ', "|"]
   putStrLn $ replicate x '='
 
 
@@ -92,13 +95,13 @@ errorText, successText :: String -> String
 errorText   = colorPrint Foreground     Red
 successText = colorPrint Foreground   Green
 
-titleText :: String -> (Int, Int) -> String
-titleText str size = colorPrint Background Magenta $ toCenter str size
+titleText :: String  -> String
+titleText str = colorPrint Background Magenta $ centerMain str
 
-toCenter :: String -> (Int, Int) -> String
-toCenter str (_,x) = concat [l, str, r]
+centerMain :: String -> String
+centerMain str = concat [l, str, r]
   where
-      space = (x `div` 3) - (length str)
+      space = 30 - (length str)
       cor = space `mod` 2
       l = replicate (space `div` 2) ' '
       r = replicate ((space `div` 2) + cor) ' '

@@ -27,6 +27,7 @@ library
       base >=4.7 && <5
     , ansi-terminal
     , sqlite-simple
+    , time
 
   ghc-options:
       -Wall
@@ -56,6 +57,7 @@ executable infinityApp-exe
         base ^>=4.20.0.0
       , ansi-terminal
       , sqlite-simple
+      , time
 
       , infinityApp
 
