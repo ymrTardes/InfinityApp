@@ -15,7 +15,7 @@ loginForm FormClear appData = do
                                 formClear
                                 loginForm FormNew appData
 
-loginForm FormNew (accountList, _) = do
+loginForm FormNew (accountList, _, _) = do
   printMain $ titleText "[LOGIN]"
 
   cursorForward 2
@@ -32,4 +32,4 @@ loginForm FormNew (accountList, _) = do
     pure $ FormErr "No account"
 
   else do
-    chatForm FormClear $ (accountList, findUser !! 0)
+    chatForm FormClear $ (accountList, findUser !! 0, [])

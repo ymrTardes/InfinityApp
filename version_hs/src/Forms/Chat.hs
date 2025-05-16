@@ -18,9 +18,11 @@ chatForm FormClear appData  = do
                                 printMain $ titleText "[CHAT]"
                                 chatForm FormNew appData
 
-chatForm FormNew appData@(accountList, _) = do
-  cursorForward 2
-  putStr "Message (or :q): "
+chatForm FormNew appData@(accountList, _, chatBuf) = do
+  setCursorPosition 3 0
+  mapM_ printSecond chatBuf
+
+  printSecondDown "Message (or :q): "
 
   messageData <- getLine
 
@@ -39,33 +41,33 @@ chatForm FormNew appData@(accountList, _) = do
 commandRender :: [String] -> AppData -> IO AppData
 commandRender [] appData = pure appData
 
-commandRender (":b":args) (accountList, user) = do
+commandRender (":b":args) (accountList, user, chatBuf) = do
   printSecond $ successText "Bio updated"
   let
     user' = user {ubio = unwords args}
     bacc  = break (==user) accountList
     accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
-  pure (accountList', user')
+  pure (accountList', user', chatBuf)
 
 -- No changed data
-commandRender (cmd:args) (accountList, user) = do
-  case cmd of
-    -- Info
-    ":h" -> mapM_ printSecond showHelp
-    ":l" -> do
-      let res = doList accountList args
-      printSecond . successText $ "Complited search: " <> show (length res)
-      mapM_ (printSecond . show) $ res
-    ":i" -> printSecond $ show user
+commandRender (cmd:args) (accountList, user, chatBuf) = do
+  let
+    res = doList accountList args
+    res' = map show res
+    chatBuf' = case cmd of
+      -- Info
+      ":h" -> chatBuf <> showHelp
+      ":l" -> chatBuf <> [successText ("Complited search: " <> show (length res))] <> res'
+      ":i" -> chatBuf <> [show user]
 
-    -- Actions
-    ":r" -> runAction user (doReverse args) "R" "Command error :r <str>"
-    ":c" -> runAction user (doCalc args)    "C" "Command error :c <num> <num>"
+      -- Actions
+      ":r" -> chatBuf <> [runAction user (doReverse args) "R" "Command error :r <str>"]
+      ":c" -> chatBuf <> [runAction user (doCalc args)    "C" "Command error :c <num> <num>"]
 
-    -- Just message
-    _    -> printSecond $ ulogin user ++ "> " ++ unwords (cmd:args)
+      -- Just message
+      _    -> chatBuf <> [ulogin user ++ "> " ++ unwords (cmd:args)]
 
-  pure (accountList, user)
+  pure (accountList, user, chatBuf')
 
 
 showHelp :: [String]
@@ -80,13 +82,12 @@ showHelp =  [ successText "[HELP]"
             ]
 
 
-runAction :: User -> Maybe String -> String -> String -> IO ()
-runAction user fRes logo errMsg = do
-              cursorForward 2
-              putStr $ concat [ ulogin user, " [", logo, "]> "]
-              case fRes of
-                Nothing  -> printSecond $ errorText errMsg
-                Just res -> printSecond res
+runAction :: User -> Maybe String -> String -> String -> String
+runAction user fRes logo errMsg = 
+              concat [ ulogin user, " [", logo, "]> "]
+              <> case fRes of
+                  Nothing  -> errorText errMsg
+                  Just res -> res
 
 
 doReverse :: [String] -> Maybe String

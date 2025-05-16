@@ -26,7 +26,7 @@ menuForm n FormClear appData  = do
                                   formClear
                                   menuForm n FormNew appData
 menuForm selectedIndex FormNew appData        = do
-  printMain $ titleText "[APP]"
+  printMain $ titleText "[MANU]"
 
   let
     runFormR = runForm appData registerForm
@@ -54,8 +54,8 @@ menuForm selectedIndex FormNew appData        = do
 
   case map toUpper controlKey of
     -- Menu control
-    "A[\ESC" -> menuForm (selectedIndex - 1) FormClear appData
-    "B[\ESC" -> menuForm (selectedIndex + 1) FormClear appData
+    "\ESC[A" -> menuForm (selectedIndex - 1) FormClear appData
+    "\ESC[B" -> menuForm (selectedIndex + 1) FormClear appData
     "\n"     -> snd $ menu_options !! selectedIndex
 
     -- Hotkeys
@@ -70,34 +70,28 @@ waitingKey :: IO String
 waitingKey = do
       more <- hReady stdin
       if more then do
-        content <- getKey
-        pure $ content
+        getKey' ""
       else do
         miniAnim
         waitingKey
-
-getKey :: IO String
-getKey = getKey' ""
   where 
-    getKey' chars = do
-      char <- getChar
-      more <- hReady stdin
+      getKey' chars = do
+        char <- getChar
+        more <- hReady stdin
 
-      if more then 
-        getKey' (char:chars) 
-      else
-        return (char:chars)
+        (if more then getKey' else return . reverse) (char:chars)
+
 
 miniAnim :: IO ()
 miniAnim = do
   threadDelay 100000
   saveCursor
 
-  setCursorPosition 2 35
   time <- getCurrentTime
+  setCursorPosition 3 35
   putStr $ formatTime defaultTimeLocale "%a %b %e %H:%M:%S" time <> "       "
 
-  setCursorPosition 3 35
+  setCursorPosition 4 35
   let 
     arr = ["|", "/", "-", "\\"]
     d = diffTimeToPicoseconds $ utctDayTime time
@@ -112,7 +106,6 @@ printMenuSelected n (i, (s, _)) = do
       printMain $
         if i == n then colorPrint Background Blue s
         else s
-
 
 runForm :: AppData -> Form -> IO FormType
 runForm appData form = do

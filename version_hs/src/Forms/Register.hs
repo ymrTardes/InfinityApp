@@ -16,7 +16,7 @@ registerForm (FormErr msg) appData  = do
 registerForm FormClear appData  = do
                                     formClear
                                     registerForm FormNew appData
-registerForm FormNew appData@(accountList, _) = do
+registerForm FormNew appData@(accountList, _, _) = do
   printMain $ titleText "[REGISTRATION]"
 
   cursorForward 2
@@ -29,7 +29,7 @@ registerForm FormNew appData@(accountList, _) = do
     _ -> registerFormAge login FormNew appData
 
 registerFormAge :: String ->  Form
-registerFormAge login _ appData@(accountList, _) = do
+registerFormAge login _ appData@(accountList, _, _) = do
   putStr "Age: "
   age <- getLine
 
@@ -40,7 +40,7 @@ registerFormAge login _ appData@(accountList, _) = do
 
       let usr = User 0 login (read age) ""
 
-      chatForm FormClear (accountList <> [usr], usr)
+      chatForm FormClear (accountList <> [usr], usr, [])
 
 
 

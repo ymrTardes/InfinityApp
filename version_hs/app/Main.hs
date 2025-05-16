@@ -15,7 +15,6 @@ import Control.Exception
 main :: IO ()
 main = do
   hSetBuffering stdout NoBuffering
-
   setTitle "InfinityApp"
 
   -- DB
@@ -36,7 +35,7 @@ main = do
     useAlternateScreenBuffer
     useNormalScreenBuffer 
     $ do
-      _ <- menuForm 0 FormClear (users, defUser)
+      _ <- menuForm 0 FormClear (users, defUser, [])
       pure ()
 
   -- catch (menuForm 0 FormClear (users, defUser) >> pure ()) (\e -> print (e :: AsyncException))

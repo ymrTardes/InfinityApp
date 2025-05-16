@@ -16,6 +16,7 @@ module Config (
 
   , printMain
   , printSecond
+  , printSecondDown
 
   , titleText
   , centerMain
@@ -32,7 +33,7 @@ import Control.Monad
 
 type Form = FormType -> AppData -> IO FormType
 
-type AppData = ([User], User)
+type AppData = ([User], User, [String])
 
 data FormType = FormNew | FormClear | FormErr String | FormClose
   deriving (Eq, Show)
@@ -55,6 +56,19 @@ printSecond str = do
   putStr str
   cursorDownLine 1
 
+printSecondDown :: String -> IO ()
+printSecondDown str = do
+  (y,_) <- tSize
+  setCursorPosition (y-3) 36
+  putStr str
+
+
+formClear :: IO ()
+formClear = do
+  setCursorPosition 0 0
+  clearScreen
+  drawAll
+  setCursorPosition 3 0
 
 formError :: String -> IO ()
 formError msg = do
@@ -64,25 +78,21 @@ formError msg = do
   setCursorPosition 1 2
   putStr "Error: "
   putStrLn $ errorText msg
+  setCursorPosition 3 0
+
 
 tSize :: IO (Int, Int)
 tSize = do
   size' <- getTerminalSize
   pure $ fromMaybe (0,0) size'
 
-formClear :: IO ()
-formClear = do
-  setCursorPosition 0 0
-  clearScreen
-  drawAll
-  setCursorPosition 1 1
-  putStrLn ""
-
 drawAll :: IO ()
 drawAll = do
   (y,x) <- tSize
   putStrLn $ replicate x '='
-  replicateM_ (y - 3) $
+  putStrLn $ concat ["|", replicate 32 ' ' , "|" ,  replicate (x - 35) ' ', "|"]
+  putStrLn $ replicate x '='
+  replicateM_ (y - 5) $
     putStrLn $ concat ["|", replicate 32 ' ' , "|" ,  replicate (x - 35) ' ', "|"]
   putStrLn $ replicate x '='
 
