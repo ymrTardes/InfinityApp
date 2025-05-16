@@ -16,6 +16,8 @@ main :: IO ()
 main = do
   hSetBuffering stdout NoBuffering
 
+  setTitle "InfinityApp"
+
   -- DB
   -- conn <- open "../infinityApp.db"
   -- execute conn "INSERT INTO users (name, age, bio) VALUES (?, ?, ?)"

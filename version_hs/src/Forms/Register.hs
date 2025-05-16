@@ -6,6 +6,8 @@ import User
 import Config
 
 import Forms.Chat
+import System.Console.ANSI
+import Data.Maybe
 
 registerForm :: Form
 registerForm FormClose _ = pure FormClose
@@ -15,14 +17,16 @@ registerForm (FormErr msg) appData  = do
 registerForm FormClear appData  = do
                                     formClear
                                     registerForm FormNew appData
-registerForm FormNew appData@(accountList, _) = do 
-  putStrLn $ titleText " [REGISTRATION] "
+registerForm FormNew appData@(accountList, _) = do
+  size <- getTerminalSize
+  cursorForward 2
+  printInside $ titleText "[REGISTRATION]" (fromMaybe (0,0) size)
 
   putStr "Login (or :q): "
   login <- getLine
 
   case getLoginErrs accountList login of
-    Just "-" -> pure FormNew
+    Just "-" -> pure FormClear
     Just err -> registerForm (FormErr err) appData
     _ -> registerFormAge login FormNew appData
 
