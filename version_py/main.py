@@ -1,6 +1,6 @@
 from src.User import DataUser
 from src.config import *
-from version_py.src.menu_form import *
+from src.menu_form import *
 
 
 def main():
