@@ -1,4 +1,5 @@
 from blessed import Terminal
+from src.User import DataUser
 term = Terminal()
 import sqlite3
 
@@ -45,3 +46,17 @@ def get_inp(query_msg):
 
 def find_user_name(account_list, name_inp):
     return list(filter(lambda usr: usr.name == name_inp, account_list))
+
+
+def parse_users(text: str):
+    users_bd_list = text.split("\n")
+    users_bd_list = list(map(lambda x: x.split(";"), users_bd_list))
+    account_list = []
+
+    for usr in users_bd_list:
+        if len(usr[0]) != 0:
+            user_atrib = DataUser(usr[0].strip(), usr[1].strip())
+            user_atrib.set_bio(usr[2].strip())
+            account_list.append(user_atrib)
+    
+    return account_list

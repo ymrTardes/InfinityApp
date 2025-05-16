@@ -1,4 +1,3 @@
-from src.User import DataUser
 from src.config import *
 from src.menu_form import *
 
@@ -10,18 +9,10 @@ def main():
 
     account_list = []
     with open(path_bd, "r") as file:
-        users_lines = file.read()
-        users_lines = users_lines.split("\n")
-        users_lines = list(map(lambda x: x.split(";"), users_lines))
-
         try:
-            for usr in users_lines:
-                if len(usr[0]) != 0:
-                    user_atrib = DataUser(usr[0].strip(), usr[1].strip())
-                    user_atrib.set_bio(usr[2].strip())
-                    account_list.append(user_atrib)
+            account_list = parse_users(file.read())
         except Exception as e:
-            print("Ошибка в файле БД >>> {e}")
+            print(f"Ошибка в файле БД >>> {e}")
             
     try:
         with term.fullscreen(): # запускает буффер (Терминал поверх нынешнего)
