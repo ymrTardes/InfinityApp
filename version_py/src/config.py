@@ -1,32 +1,24 @@
 from blessed import Terminal
 term = Terminal()
-# import sys
+import sqlite3
 
 
-# consts
-help_text = [
-          ":q - выход"
-        , ":h - помощь"
-        , ":r <msg> - перевернутое сообщение"
-        , ":c <a> <b> - a + b"
-        , ":l - вывод всех полььзователей"
-        , ":l <text> - поиск пользователей по свопадению"
-        , ":i - информация обо мне"
-        , ":b <text> - изменить биографию (обо мне)"
-        ]
+# sqlite
+# connection = sqlite3.connect("version_py/data/my_db.db")
+# cursor = conn.cursor()
 
-
-menu_form_elements = ["REGISTRATION (R)", "LOGIN (L)", "Press 'q' to Quit."]
-# choice_menu = 0 # нужна для отрисовки какой пункт меню выбран в >>> draw_menu()
+with sqlite3.connect("version_py/data/my_db.db") as conn:
+    cursor = conn.cursor() #  объект "курсор" для выполнения SQL-запросов и операций с базой данных
 
 
 path_bd = "version_py/data/users.txt"
 
 
+
+
 # UI functions
 def gui_wrapper(title, sub_char=" "):
     title_text = wrap_title(title, sub_char)
-    # print(f"{term.home}{term.on_brown2}{term.deepskyblue2}{term.clear}{term.move_down(1)}{title_text}")
     print(term.move_down(3) + title_text)
 
 
@@ -47,38 +39,9 @@ def wrap_title(title, sub_char=" "):
 
 
 # usualness functions
-def out_help():
-    return "\n".join(help_text)
-
-
-def check_age(a: int):
-    """
-    return вернет итак True или False, нет смысла в конструкции if else
-    """
-    return a > 17 and a <= 80
-
-
 def get_inp(query_msg):
     return input(query_msg).strip() # strip уберает лишние пробелы по умолчанию
 
 
-def login_only_letters(name):
-    # res = list(filter(lambda l: l.isalpha(), name))
-    # print(f"{res} + \n + {list(name)}")
-    # return 
-    res = name.isalpha()
-    return res
-
-
 def find_user_name(account_list, name_inp):
     return list(filter(lambda usr: usr.name == name_inp, account_list))
-
-
-
-
-def reverse_text(text):    
-    """
-    инвертированное сообщение
-    """
-    text = " ".join(text[1::])
-    print(text[::-1].strip())
