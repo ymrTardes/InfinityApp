@@ -11,14 +11,16 @@ chatForm :: Form
 chatForm FormClose _ = pure FormClose
 chatForm (FormErr msg) appData  = do
                                     formError msg
-                                    -- putStrLn $ titleText "[CHAT]"
                                     chatForm FormNew appData
 chatForm FormClear appData  = do
                                 formClear
-                                printMain $ titleText "[CHAT]"
                                 chatForm FormNew appData
 
 chatForm FormNew appData@(accountList, _, chatBuf) = do
+  setCursorPosition 3 0
+  printMain $ titleText "[CHAT]"
+  printMain $ successText "Online : 1"
+
   setCursorPosition 3 0
   mapM_ printSecond chatBuf
 
@@ -27,31 +29,30 @@ chatForm FormNew appData@(accountList, _, chatBuf) = do
   messageData <- getLine
 
   -- Remove entereted maessage/command
-  cursorUp 1
-  clearFromCursorToLineEnd
+  (_,x) <- tSize
+  printSecondDown $ concat [replicate (x - 37) ' ', "|"]
 
   if messageData == ":q" then do
     writeFile usersPath $ unlines $ map userToStr accountList
     pure FormClose
   else do
-    appData' <- commandRender (words messageData) appData
-    chatForm FormNew appData'
+    chatForm FormNew $ commandRender (words messageData) appData
 
 
-commandRender :: [String] -> AppData -> IO AppData
-commandRender [] appData = pure appData
 
-commandRender (":b":args) (accountList, user, chatBuf) = do
-  printSecond $ successText "Bio updated"
-  let
+commandRender :: [String] -> AppData -> AppData
+
+commandRender [] appData = appData
+
+commandRender (":b":args) (accountList, user, chatBuf) = (accountList', user', chatBuf')
+  where
     user' = user {ubio = unwords args}
     bacc  = break (==user) accountList
     accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
-  pure (accountList', user', chatBuf)
+    chatBuf' = chatBuf <> [successText "Bio updated"]
 
--- No changed data
-commandRender (cmd:args) (accountList, user, chatBuf) = do
-  let
+commandRender (cmd:args) (accountList, user, chatBuf) = (accountList, user, chatBuf')
+  where
     res = doList accountList args
     res' = map show res
     chatBuf' = case cmd of
@@ -66,8 +67,6 @@ commandRender (cmd:args) (accountList, user, chatBuf) = do
 
       -- Just message
       _    -> chatBuf <> [ulogin user ++ "> " ++ unwords (cmd:args)]
-
-  pure (accountList, user, chatBuf')
 
 
 showHelp :: [String]

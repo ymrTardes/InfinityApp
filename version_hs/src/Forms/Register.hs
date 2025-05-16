@@ -30,16 +30,15 @@ registerForm FormNew appData@(accountList, _, _) = do
 
 registerFormAge :: String ->  Form
 registerFormAge login _ appData@(accountList, _, _) = do
+
+  cursorForward 2
   putStr "Age: "
   age <- getLine
 
   case getAgeErrs age of
     Just err -> registerForm (FormErr err) appData
     _ -> do
-      -- appendFile usersPath $ concat ["\n", login, ";", age, ";"]
-
       let usr = User 0 login (read age) ""
-
       chatForm FormClear (accountList <> [usr], usr, [])
 
 

@@ -66,15 +66,19 @@ printSecondDown str = do
 formClear :: IO ()
 formClear = do
   setCursorPosition 0 0
+  hideCursor
   clearScreen
   drawAll
+  showCursor
   setCursorPosition 3 0
 
 formError :: String -> IO ()
 formError msg = do
   setCursorPosition 0 0
+  hideCursor
   clearScreen
   drawAll
+  showCursor
   setCursorPosition 1 2
   putStr "Error: "
   putStrLn $ errorText msg
@@ -89,12 +93,12 @@ tSize = do
 drawAll :: IO ()
 drawAll = do
   (y,x) <- tSize
-  putStrLn $ replicate x '='
-  putStrLn $ concat ["|", replicate 32 ' ' , "|" ,  replicate (x - 35) ' ', "|"]
-  putStrLn $ replicate x '='
+  putStrLn $ concat ["+", replicate (x-2) '-', "+"]
+  putStrLn $ concat ["|", replicate (x - 2) ' ', "|"]
+  putStrLn $ concat ["+", replicate (x-2) '-', "+"]
   replicateM_ (y - 5) $
     putStrLn $ concat ["|", replicate 32 ' ' , "|" ,  replicate (x - 35) ' ', "|"]
-  putStrLn $ replicate x '='
+  putStrLn $ concat ["+", replicate (x-2) '-', "+"]
 
 
 colorPrint :: ConsoleLayer -> Color -> String -> String

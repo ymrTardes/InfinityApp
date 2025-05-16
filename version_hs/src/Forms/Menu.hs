@@ -87,10 +87,12 @@ miniAnim = do
   threadDelay 100000
   saveCursor
 
+  -- Time
   time <- getCurrentTime
   setCursorPosition 3 35
   putStr $ formatTime defaultTimeLocale "%a %b %e %H:%M:%S" time <> "       "
 
+  -- Spinners
   setCursorPosition 4 35
   let 
     arr = ["|", "/", "-", "\\"]
