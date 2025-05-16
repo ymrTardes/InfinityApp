@@ -6,7 +6,7 @@ def main():
     """
     Функция main() запускается при старте
     """
-
+    test_db()
     account_list = []
     with open(path_bd, "r") as file:
         try:

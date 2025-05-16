@@ -8,8 +8,25 @@ import sqlite3
 # connection = sqlite3.connect("version_py/data/my_db.db")
 # cursor = conn.cursor()
 
-with sqlite3.connect("version_py/data/my_db.db") as conn:
-    cursor = conn.cursor() #  объект "курсор" для выполнения SQL-запросов и операций с базой данных
+
+
+
+
+# Выводим результаты
+def test_db():
+    with sqlite3.connect("/home/rick/python/InfinityApp/infinityApp.db") as conn:
+        cursor = conn.cursor() #  объект "курсор" для выполнения SQL-запросов и операций с базой данных
+
+        # Выбираем всех пользователей
+        cursor.execute('SELECT * FROM Users')
+        users = cursor.fetchall()
+
+        conn.commit()
+    conn.close()
+
+    for user in users:
+        print(user)
+
 
 
 path_bd = "version_py/data/users.txt"
