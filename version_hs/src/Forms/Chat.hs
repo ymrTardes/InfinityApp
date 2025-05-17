@@ -57,9 +57,9 @@ chatForm FormNew appData@(_, user, chatBuf) = do
       appData'@(_,user',_) = commandRender (words messageData) appData
 
     if user /= user' then do
-      conn <- open dbPath
-      execute conn "UPDATE users SET bio = ? WHERE id = ?"  $ (ubio user', uid user)
-      close conn
+      withConnection dbPath $ \conn -> do
+        execute conn "update users set bio = ? where id = ?"  $ (ubio user', uid user)
+
       mapM_ putStr $ clearMain (y,x)
     else
       pure ()

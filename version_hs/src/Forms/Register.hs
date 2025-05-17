@@ -44,12 +44,13 @@ registerFormAge login _ appData@(accountList, _, _) = do
   case getAgeErrs age of
     Just err -> registerForm (FormErr err) appData
     _ -> do
-      conn <- open dbPath
-      execute conn "INSERT INTO users (name, age, bio) VALUES (?, ?, ?)" (login, read age :: Int, "" :: String)
-      rowId <- lastInsertRowId conn
-      close conn
+      let usr' = User 0 login (read age) ""
 
-      let usr = User (fromIntegral rowId) login (read age) ""
+      rowId <- withConnection dbPath $ \conn -> do
+        execute conn "insert into users (name, age, bio) values (?, ?, ?)" usr'
+        lastInsertRowId conn
+
+      let usr = usr' {uid = (fromIntegral rowId)}
 
       chatForm FormClear (accountList <> [usr], usr, [])
 

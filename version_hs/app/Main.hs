@@ -18,9 +18,12 @@ main = do
   hSetBuffering stdout NoBuffering
   setTitle "InfinityApp"
 
-  conn <- open dbPath
-  users <- query_ conn "select * from users" :: IO [User]
-  close conn
+  -- conn <- open dbPath
+  -- users <- query_ conn "select * from users" :: IO [User]
+  -- close conn
+
+  users <- withConnection dbPath $ \conn -> do
+    query_ conn "select * from users" :: IO [User]
 
   bracket_
     useAlternateScreenBuffer
