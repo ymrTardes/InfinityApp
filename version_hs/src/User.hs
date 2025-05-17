@@ -21,10 +21,8 @@ data User = User {
 instance FromRow User where
   fromRow = User <$> field <*> field <*> field <*> field
 
-
 defUser :: User
 defUser = User 0 "" 0 ""
-
 
 userToRow :: User -> (String, Int, String)
 userToRow a = (ulogin a, uage a, ubio a)

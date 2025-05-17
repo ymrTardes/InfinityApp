@@ -14,9 +14,12 @@ library
   exposed-modules:
       Config
       User
+      Animations
+      ScreenControl
       Forms.Menu
       Forms.Register
       Forms.Login
+      Forms.Games
       Forms.Chat
 
   default-extensions:
@@ -28,7 +31,6 @@ library
     , ansi-terminal
     , sqlite-simple
     , time
-    , text
 
   ghc-options:
       -Wall
@@ -59,7 +61,6 @@ executable infinityApp-exe
       , ansi-terminal
       , sqlite-simple
       , time
-      , text
 
       , infinityApp
 

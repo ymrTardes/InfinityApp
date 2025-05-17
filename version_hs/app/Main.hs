@@ -11,6 +11,7 @@ import Config
 import Forms.Menu
 
 import Control.Exception
+import ScreenControl (drawAll)
 
 main :: IO ()
 main = do
@@ -25,6 +26,7 @@ main = do
     useAlternateScreenBuffer
     useNormalScreenBuffer 
     $ do
+      drawAll
       _ <- menuForm 0 FormClear (users, defUser, [])
       pure ()
 

@@ -2,24 +2,29 @@ module Forms.Login (loginForm) where
 
 import User
 import Config
+import ScreenControl
 
 import Forms.Chat
-import System.Console.ANSI
 
 loginForm :: Form
 loginForm FormClose _ = pure FormClose
+
 loginForm (FormErr msg) appData = do
-                                    formError msg
-                                    loginForm FormNew appData
+  size <- tSize
+  mapM_ putStr $ clearAll size
+  printError msg
+  loginForm FormNew appData
+
 loginForm FormClear appData = do
-                                formClear
-                                loginForm FormNew appData
+  size <- tSize
+  mapM_ putStr $ clearAll size
+  loginForm FormNew appData
 
 loginForm FormNew (accountList, _, _) = do
-  printMain $ titleText "[LOGIN]"
+  putStr toMain
+  printMain True $ titleText "[LOGIN]"
 
-  cursorForward 2
-  putStr "Login (or :q): "
+  printMain False "Login (or :q): "
 
   login <- getLine
 

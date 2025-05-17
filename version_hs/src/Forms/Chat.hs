@@ -1,37 +1,55 @@
 module Forms.Chat (chatForm) where
 
-import System.Console.ANSI
 import Data.Char
 
 import User
 import Config
+import ScreenControl
+
 import Control.Monad
 import Database.SQLite.Simple
+import System.Console.ANSI (ConsoleLayer(Foreground), Color (Blue))
 
 chatForm :: Form
 chatForm FormClose _ = pure FormClose
+
 chatForm (FormErr msg) appData  = do
-                                    formError msg
-                                    chatForm FormNew appData
+  size <- tSize
+  mapM_ putStr $ clearAll size
+  printError msg
+  chatForm FormNew appData
+
 chatForm FormClear appData  = do
-                                formClear
-                                chatForm FormNew appData
+  size <- tSize
+  mapM_ putStr $ clearAll size
+  chatForm FormNew appData
 
 chatForm FormNew appData@(_, user, chatBuf) = do
-  setCursorPosition 3 0
-  printMain $ titleText "[CHAT]"
-  printMain $ successText "Online : 1"
+  (y,x) <- tSize
 
-  setCursorPosition 3 0
-  mapM_ printSecond chatBuf
+  putStr toMain
+  printMain True $ titleText "[CHAT]"
+  printMain True $ successText "Online : 1"
+  printMain True $ ""
+  printMain True $ "Info:"
+  printMain True $ "Id:   "   <> (show $ uid user)
+  printMain True $ "User: " <> ulogin user
+  printMain True $ "Age:  "  <> (show $ uage user)
+  printMain True $ "Bio:  "  <> ubio user
 
-  printSecondDown "Message (or :q): "
+  mapM_ putStr $ clearSide (y,x)
+  putStr toSide
+
+  let
+    winChatBuf = (reverse . take (y - 6) . reverse) chatBuf
+  mapM_ (printSide True) winChatBuf
+
+  printSideDown "Message (or :q): "
 
   messageData <- getLine
 
   -- Remove entereted maessage/command
-  (_,x) <- tSize
-  printSecondDown $ concat [replicate (x - 37) ' ', "|"]
+  printSideDown $ replicate (x - 36) ' '
 
   if messageData == ":q" then pure FormClose
   else do
@@ -42,6 +60,7 @@ chatForm FormNew appData@(_, user, chatBuf) = do
       conn <- open dbPath
       execute conn "UPDATE users SET bio = ? WHERE id = ?"  $ (ubio user', uid user)
       close conn
+      mapM_ putStr $ clearMain (y,x)
     else
       pure ()
 
@@ -74,7 +93,7 @@ commandRender (cmd:args) (accountList, user, chatBuf) = (accountList, user, chat
       ":c" -> chatBuf <> [runAction user (doCalc args)    "C" "Command error :c <num> <num>"]
 
       -- Just message
-      _    -> chatBuf <> [ulogin user ++ "> " ++ unwords (cmd:args)]
+      _    -> chatBuf <> [colorPrint Foreground Blue (ulogin user ++ "> ") ++ unwords (cmd:args)]
 
 
 showHelp :: [String]
