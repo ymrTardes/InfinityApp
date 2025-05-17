@@ -22,18 +22,31 @@ def registration_form(account_list: list):
         else:
             try:
                 age_inp = int(get_inp("Скок по земле ходишь епта: "))
-                if check_age(age_inp):
-                    user = DataUser(name_inp, age_inp)
-                    with open(path_bd, "a") as file:
-                        file.write(f"{name_inp}; {age_inp}; {user.bio}\n")
-                    account_list.append(user)
-                    chat_form(account_list, user)
-                    return False
-                else:
+                if not check_age(age_inp):
                     error_text("Возраст должен быть от 18 до 80")
                     continue
+
+                user = DataUser(0, name_inp, age_inp)
+                # with open(path_bd, "a") as file:
+                    # file.write(f"{name_inp}; {age_inp}; {user.bio}\n")
+
+                with sqlite3.connect("/home/rick/python/InfinityApp/infinityApp.db") as conn:
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        "INSERT into users (name, age, bio) values (?,?,?)",
+                        (name_inp, age_inp, user.bio)
+                    )
+
+                    conn.commit()
+                conn.close()
+
+                account_list.append(user)
+                chat_form(account_list, user)
+                return False
+
             except Exception as e:
                 error_text("Чилос вводи, мда...")
+                print(e)
                 continue
 
 

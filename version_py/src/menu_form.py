@@ -4,7 +4,7 @@ from src.registration_form import *
 
 
 # consts
-menu_form_elements = ["REGISTRATION (R)", "LOGIN (L)", "Press 'q' to Quit."]
+menu_form_elements = ["REGISTRATION (R)", "LOGIN (L)", "QUIT (Q)."]
 # choice_menu = 0 # нужна для отрисовки какой пункт меню выбран в >>> draw_menu()
 
 
@@ -17,16 +17,12 @@ def menu_form(account_list, choice_menu=0):
 
     while key_i.lower() != "q":
         with term.cbreak(), term.hidden_cursor(): # блокировка ввода пользователя, чтобы все происходило по отслеживанию нажатой кнопки
-            key_i = term.inkey(timeout=10) # timeout задает переменной None через N секунд
-        if not key_i:
-            print(term.lavenderblush4_reverse("Ожидание ввода..."))
-        elif key_i.name == "KEY_DOWN":
-            if choice_menu != 2:
-                choice_menu += 1
+            key_i = term.inkey() # timeout задает переменной None через N секунд
+        if key_i.name == "KEY_DOWN":
+            choice_menu = choice_menu + 1 if choice_menu < 2 else 0
             draw_menu(choice_menu)
         elif key_i.name == "KEY_UP":
-            if choice_menu != 0:
-                choice_menu -= 1
+            choice_menu = choice_menu - 1 if choice_menu > 0 else 2
             draw_menu(choice_menu)
         elif key_i.name == "KEY_ENTER":
             match choice_menu:
@@ -41,13 +37,13 @@ def menu_form(account_list, choice_menu=0):
             result_forms = registration_form(account_list)
         elif key_i.lower() == "l":
             result_forms = login_form(account_list)
+        elif key_i.lower() == "q":
+            result_forms = False
         
-        if result_forms:
-            print(term.clear + term.home)
-            draw_menu(choice_menu)
-            continue
-        else:
+        if not result_forms:
             break
+        print(term.clear + term.home)
+        draw_menu(choice_menu)
 
 
 def draw_menu(choice_menu):

@@ -1,11 +1,12 @@
 class DataUser:
-    def __init__(self, name, age): # Конструктор
+    def __init__(self, id, name, age, bio="Undefinded"): # Конструктор
         """
         self - ссылка на экземпляр класса
         """
+        self.id = id
         self.name = name # Свойство объекта или параметр
         self.age = age
-        self.bio = "BIO undefinded"
+        self.bio = bio
     def __str__(self): # строковое представление объекта
         return f"User >>> Name={self.name}, Age={self.age}, Bio={self.bio}"
 

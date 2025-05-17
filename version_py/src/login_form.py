@@ -13,9 +13,9 @@ def login_form(account_list):
             return True
         
         find_user = find_user_name(account_list, name_inp)
-        if len(find_user) != 0:
-            chat_form(account_list, find_user[0])
-            return False
-        else:
+        if len(find_user) == 0:
             error_text("Пользователь не найден")
             continue
+
+        chat_form(account_list, find_user[0])
+        return False

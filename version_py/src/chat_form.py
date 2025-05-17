@@ -29,12 +29,6 @@ def chat_form(account_list, user):
         # сообщение юзера разбитое на список
         match split_message[0].lower() if split_message else None:
             case ":q":
-                try:
-                    with open(path_bd, "w") as file:
-                        for i in account_list:
-                            file.write(f"{i.name}; {i.age}; {i.bio}\n")
-                except Exception as e:
-                    print(f"Не ломай файл >>> {e}")
                 return True
             case ":h":
                 print(out_help())
@@ -51,7 +45,7 @@ def chat_form(account_list, user):
                 print(f"Me >>> {user.name}, {user.age}, {user.bio}")
             case ":b":
                 run_edit_bio(split_message, user)
-                print(user)
+                print("Данные пользователя обновлены :)")
             case "\n":
                 error_text("Сообщение пустое")
             case _: # Любой другой случай
@@ -62,6 +56,15 @@ def chat_form(account_list, user):
 def run_edit_bio(split_message, user):
     bio_str = " ".join(split_message[1:])
     user.set_bio(bio_str)
+    with sqlite3.connect("/home/rick/python/InfinityApp/infinityApp.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE users SET bio = (?) WHERE name = (?)",
+            (user.bio, user.name)
+        )
+
+        conn.commit()
+    conn.close()
 
 
 def run_list_users(split_message, account_list):
