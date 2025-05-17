@@ -3,8 +3,7 @@ module Config (
   , AppData
   , Form
 
-  , usersPath
-  , chatPath
+  , dbPath
 
   , formError
   , formClear
@@ -39,10 +38,8 @@ data FormType = FormNew | FormClear | FormErr String | FormClose
   deriving (Eq, Show)
 
 
-usersPath :: FilePath
-chatPath  :: FilePath
-usersPath  = "data/users"
-chatPath   = "data/chat"
+dbPath :: FilePath
+dbPath  = "../infinityApp.db"
 
 printMain :: String -> IO ()
 printMain str = do

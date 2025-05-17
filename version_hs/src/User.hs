@@ -1,7 +1,6 @@
 module User (
     User(..)
-  , userToStr
-  , strToUser
+  , userToRow
   , defUser
 
   , splitOn
@@ -26,13 +25,9 @@ instance FromRow User where
 defUser :: User
 defUser = User 0 "" 0 ""
 
-userToStr :: User -> String
-userToStr a = concat [ulogin a, ";", show $ uage a, ";", ubio a]
 
-strToUser :: String -> User
-strToUser str = User 0 (usr !! 0) (read $ usr !! 1) (usr !! 2)
-  where
-      usr = splitOn ';' str
+userToRow :: User -> (String, Int, String)
+userToRow a = (ulogin a, uage a, ubio a)
 
 splitOn :: Char -> String -> [String]
 splitOn _  [] = [[]]

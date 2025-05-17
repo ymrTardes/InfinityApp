@@ -6,6 +6,7 @@ import Data.Char
 import User
 import Config
 import Control.Monad
+import Database.SQLite.Simple
 
 chatForm :: Form
 chatForm FormClose _ = pure FormClose
@@ -16,7 +17,7 @@ chatForm FormClear appData  = do
                                 formClear
                                 chatForm FormNew appData
 
-chatForm FormNew appData@(accountList, _, chatBuf) = do
+chatForm FormNew appData@(_, user, chatBuf) = do
   setCursorPosition 3 0
   printMain $ titleText "[CHAT]"
   printMain $ successText "Online : 1"
@@ -32,12 +33,19 @@ chatForm FormNew appData@(accountList, _, chatBuf) = do
   (_,x) <- tSize
   printSecondDown $ concat [replicate (x - 37) ' ', "|"]
 
-  if messageData == ":q" then do
-    writeFile usersPath $ unlines $ map userToStr accountList
-    pure FormClose
+  if messageData == ":q" then pure FormClose
   else do
-    chatForm FormNew $ commandRender (words messageData) appData
+    let
+      appData'@(_,user',_) = commandRender (words messageData) appData
 
+    if user /= user' then do
+      conn <- open dbPath
+      execute conn "UPDATE users SET bio = ? WHERE id = ?"  $ (ubio user', uid user)
+      close conn
+    else
+      pure ()
+
+    chatForm FormNew appData'
 
 
 commandRender :: [String] -> AppData -> AppData

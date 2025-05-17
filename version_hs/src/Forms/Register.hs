@@ -7,6 +7,7 @@ import Config
 
 import Forms.Chat
 import System.Console.ANSI
+import Database.SQLite.Simple
 
 registerForm :: Form
 registerForm FormClose _ = pure FormClose
@@ -38,7 +39,13 @@ registerFormAge login _ appData@(accountList, _, _) = do
   case getAgeErrs age of
     Just err -> registerForm (FormErr err) appData
     _ -> do
-      let usr = User 0 login (read age) ""
+      conn <- open dbPath
+      execute conn "INSERT INTO users (name, age, bio) VALUES (?, ?, ?)" (login, read age :: Int, "" :: String)
+      rowId <- lastInsertRowId conn
+      close conn
+
+      let usr = User (fromIntegral rowId) login (read age) ""
+
       chatForm FormClear (accountList <> [usr], usr, [])
 
 

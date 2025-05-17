@@ -2,7 +2,7 @@ module Main(main) where
 
 import System.IO
 
--- import Database.SQLite.Simple
+import Database.SQLite.Simple
 import System.Console.ANSI
 
 
@@ -17,19 +17,9 @@ main = do
   hSetBuffering stdout NoBuffering
   setTitle "InfinityApp"
 
-  -- DB
-  -- conn <- open "../infinityApp.db"
-  -- execute conn "INSERT INTO users (name, age, bio) VALUES (?, ?, ?)"
-  --   ("UU" :: String, 24 :: Int, "ds" :: String)
-  -- usersDB <- query_ conn "SELECT * from users" :: IO [User]
-  -- mapM_ print usersDB
-  -- close conn
-  -- /DB
-
-  usersRaw <- readFile' usersPath
-  let
-    users = map strToUser  $ filter (/= []) $ lines usersRaw
-
+  conn <- open dbPath
+  users <- query_ conn "select * from users" :: IO [User]
+  close conn
 
   bracket_
     useAlternateScreenBuffer

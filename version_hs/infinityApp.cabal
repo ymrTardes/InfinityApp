@@ -28,6 +28,7 @@ library
     , ansi-terminal
     , sqlite-simple
     , time
+    , text
 
   ghc-options:
       -Wall
@@ -58,6 +59,7 @@ executable infinityApp-exe
       , ansi-terminal
       , sqlite-simple
       , time
+      , text
 
       , infinityApp
 
