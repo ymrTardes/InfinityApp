@@ -37,8 +37,8 @@ def registration_form(account_list: list):
                         "INSERT into users (name, age, bio) values (?,?,?)",
                         (name_inp, age_inp, "Undefinded")
                     )
-                    cursor.execute('SELECT id FROM Users')
-                    last_created_id = cursor.fetchone()[-1]
+
+                    last_created_id = cursor.lastrowid()
 
                     user = DataUser(last_created_id, name_inp, age_inp)
                     print (user.id)
