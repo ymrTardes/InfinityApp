@@ -15,9 +15,9 @@ import Data.Maybe (fromMaybe)
 import Control.Monad
 import System.IO
 import Control.Concurrent
-import Data.Time
+import Data.Time.Clock.System
 
-waitingKey :: (UTCTime -> [String]) -> IO String
+waitingKey :: (SystemTime -> [String]) -> IO String
 waitingKey anim = do
   hideCursor
   hSetBuffering stdin NoBuffering
@@ -27,13 +27,13 @@ waitingKey anim = do
 
   pure res
 
-waitingKey' :: (UTCTime -> [String]) -> IO String
+waitingKey' :: (SystemTime -> [String]) -> IO String
 waitingKey' anim = do
       more <- hReady stdin
       if more then do
         getKey' ""
       else do
-        time <- getCurrentTime
+        time <- getSystemTime
         threadDelay $ 5 * 1000
         mapM_ (printSide True) $ anim time
 
