@@ -1,6 +1,6 @@
 from src.config import *
 from src.menu_form import *
-import sqlite3
+
 
 def main():
     """
@@ -8,12 +8,11 @@ def main():
     """
     account_list = []
 
-    with sqlite3.connect("/home/rick/python/InfinityApp/infinityApp.db") as conn:
+    with conn:
         cursor = conn.cursor() # cursor нужен для выполнения запросов SQL
         cursor.execute("SELECT * FROM users")
         account_list = parse_users(cursor.fetchall())
         conn.commit()
-    conn.close()
 
 
     # with open(path_bd, "r") as file:

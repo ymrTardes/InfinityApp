@@ -56,15 +56,14 @@ def chat_form(account_list, user):
 def run_edit_bio(split_message, user):
     bio_str = " ".join(split_message[1:])
     user.set_bio(bio_str)
-    with sqlite3.connect("/home/rick/python/InfinityApp/infinityApp.db") as conn:
+    with conn:
         cursor = conn.cursor()
         cursor.execute(
-            "UPDATE users SET bio = (?) WHERE name = (?)",
-            (user.bio, user.name)
+            "UPDATE users SET bio = (?) WHERE id = (?)",
+            (user.bio, user.id)
         )
 
         conn.commit()
-    conn.close()
 
 
 def run_list_users(split_message, account_list):
@@ -73,7 +72,14 @@ def run_list_users(split_message, account_list):
     Если передается :l - весь список пользователей
     Если :l <str> - ищутся пользователи, которые начинаются на <str>
     """
+    with conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM users")
+        total_users = cursor.fetchone()[0]
+
+
     if len(split_message) == 1:
+            print(term.red_reverse(f"Общее кол-во пользователей: {total_users}"))
             ord = 0
             for i in account_list:
                 ord += 1

@@ -13,7 +13,7 @@ def registration_form(account_list: list):
         if name_inp == ":q":
             return True
         
-        find_user = find_user = find_user_name(account_list, name_inp)
+        find_user = find_user_name(account_list, name_inp)
         if len(find_user) > 0:
             error_text("Уже есть такой педик")
             continue
@@ -26,19 +26,23 @@ def registration_form(account_list: list):
                     error_text("Возраст должен быть от 18 до 80")
                     continue
 
-                user = DataUser(0, name_inp, age_inp)
+
                 # with open(path_bd, "a") as file:
                     # file.write(f"{name_inp}; {age_inp}; {user.bio}\n")
 
-                with sqlite3.connect("/home/rick/python/InfinityApp/infinityApp.db") as conn:
+
+                with conn:
                     cursor = conn.cursor()
                     cursor.execute(
                         "INSERT into users (name, age, bio) values (?,?,?)",
-                        (name_inp, age_inp, user.bio)
+                        (name_inp, age_inp, "Undefinded")
                     )
+                    cursor.execute('SELECT id FROM Users')
+                    last_created_id = cursor.fetchone()[-1]
 
+                    user = DataUser(last_created_id, name_inp, age_inp)
+                    print (user.id)
                     conn.commit()
-                conn.close()
 
                 account_list.append(user)
                 chat_form(account_list, user)

@@ -6,6 +6,8 @@ import sqlite3
 
 
 
+conn = sqlite3.connect("./infinityApp.db")
+
 path_bd = "version_py/data/users.txt"
 
 
@@ -41,7 +43,7 @@ def get_inp(query_msg):
 def find_user_name(account_list, name_inp):
     return list(filter(lambda usr: usr.name == name_inp, account_list))
 
-
+# использовалась когда юзеры хранились в txt
 # def parse_users(text: str):
 #     users_bd_list = text.split("\n")
 #     users_bd_list = list(map(lambda x: x.split(";"), users_bd_list))
