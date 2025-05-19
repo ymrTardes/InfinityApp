@@ -38,7 +38,7 @@ def registration_form(account_list: list):
                         (name_inp, age_inp, "Undefinded")
                     )
 
-                    last_created_id = cursor.lastrowid()
+                    last_created_id = cursor.lastrowid
 
                     user = DataUser(last_created_id, name_inp, age_inp)
                     print (user.id)

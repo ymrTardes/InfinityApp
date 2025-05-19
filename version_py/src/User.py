@@ -8,7 +8,7 @@ class DataUser:
         self.age = age
         self.bio = bio
     def __str__(self): # строковое представление объекта
-        return f"User >>> Name={self.name}, Age={self.age}, Bio={self.bio}"
+        return f"User >>> ID={self.id}, Name={self.name}, Age={self.age}, Bio={self.bio}"
 
 
     def set_bio(self, bio: str):
