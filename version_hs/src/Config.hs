@@ -9,6 +9,7 @@ where
 
 import User
 
+
 type Form = FormType -> AppData -> IO FormType
 
 type AppData = ([User], User, [String])

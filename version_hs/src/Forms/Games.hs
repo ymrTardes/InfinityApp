@@ -1,29 +1,21 @@
 module Forms.Games (gamesForm) where
 
 import Config
+import Animations
 import ScreenControl
 
-import Animations
+import Forms
 
 gamesForm :: Form
-gamesForm FormClose _ = pure FormClose
-
-gamesForm (FormErr msg) appData = do
-  size <- tSize
-  mapM_ putStr $ clearAll size
-  printError msg
-  gamesForm FormNew appData
-
-gamesForm FormClear appData = do
-  size <- tSize
-  mapM_ putStr $ clearAll size
-  gamesForm FormNew appData
+gamesForm FormClose            _ = defFormClose
+gamesForm fd@(FormErr _) appData = defFormErr   gamesForm fd appData
+gamesForm FormClear      appData = defFormClear gamesForm appData
 
 gamesForm FormNew _ = do
   putStr toMain
-  printMain True $ titleText "[Games]"
+  putStr . inMain True $ titleText "[Games]"
 
-  printMain True "No games"
+  putStr . inMain True $ "No games"
 
   _ <- waitingKey gamesAnim
 

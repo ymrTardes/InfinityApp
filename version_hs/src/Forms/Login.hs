@@ -4,27 +4,19 @@ import User
 import Config
 import ScreenControl
 
+import Forms
 import Forms.Chat
 
 loginForm :: Form
-loginForm FormClose _ = pure FormClose
-
-loginForm (FormErr msg) appData = do
-  size <- tSize
-  mapM_ putStr $ clearAll size
-  printError msg
-  loginForm FormNew appData
-
-loginForm FormClear appData = do
-  size <- tSize
-  mapM_ putStr $ clearAll size
-  loginForm FormNew appData
+loginForm FormClose            _ = defFormClose
+loginForm fd@(FormErr _) appData = defFormErr   loginForm fd appData
+loginForm FormClear      appData = defFormClear loginForm appData
 
 loginForm FormNew (accountList, _, _) = do
   putStr toMain
-  printMain True $ titleText "[LOGIN]"
+  putStr . inMain True $ titleText "[LOGIN]"
 
-  printMain False "Login (or :q): "
+  putStr . inMain False $ "Login (or :q): "
 
   login <- getLine
 

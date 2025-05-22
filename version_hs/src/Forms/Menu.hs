@@ -3,37 +3,30 @@ module Forms.Menu (menuForm) where
 import System.Console.ANSI
 import Data.Char
 
+
 import Config
 import ScreenControl
 import Animations
 
+import Forms
 import Forms.Register
 import Forms.Login
 import Forms.Games
 
+
 type MenuElement = (Int, (String, IO FormType))
 
 menuForm :: Int -> Form
+menuForm _ FormClose            _ = defFormClose
+menuForm n fd@(FormErr _) appData = defFormErr   (menuForm n) fd appData
+menuForm n FormClear      appData = defFormClear (menuForm n) appData
+
 menuForm (-1) cls appData = menuForm 0 cls appData
-
 menuForm 4    cls appData = menuForm 3 cls appData
-
-menuForm _ FormClose _ = pure FormClose
-
-menuForm n (FormErr msg) appData = do
-  size <- tSize
-  mapM_ putStr $ clearAll size
-  printError msg
-  menuForm n FormNew appData
-
-menuForm n FormClear appData  = do
-  size <- tSize
-  mapM_ putStr $ clearAll size
-  menuForm n FormNew appData
 
 menuForm selectedIndex FormNew appData        = do
   putStr toMain
-  printMain True $ titleText "[MENU]"
+  putStr . inMain True $ titleText "[MENU]"
 
   let
     runFormR = runForm appData registerForm
@@ -69,14 +62,16 @@ menuForm selectedIndex FormNew appData        = do
 
     d        -> menuForm selectedIndex (FormErr $ "No command" <> show d) appData
 
+
+
 runForm :: AppData -> Form -> IO FormType
 runForm appData form = do
-      formType <- form FormClear appData
-      menuForm 0 formType appData 
+  formType <- form FormClear appData
+  menuForm 0 formType appData 
 
 printMenuSelected :: Int -> MenuElement -> IO ()
 printMenuSelected n (i, (s, _)) = do
-      printMain True $
-        if i == n then colorPrint Background Blue s
-        else s
+  putStr . inMain True $
+    if i == n then colorPrint Background Blue s
+    else s
 

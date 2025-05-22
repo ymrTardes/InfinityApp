@@ -1,55 +1,49 @@
 module Forms.Chat (chatForm) where
 
 import Data.Char
+import Control.Monad
+import Database.SQLite.Simple
+import System.Console.ANSI (ConsoleLayer(Foreground), Color (Blue))
+
 
 import User
 import Config
 import ScreenControl
 
-import Control.Monad
-import Database.SQLite.Simple
-import System.Console.ANSI (ConsoleLayer(Foreground), Color (Blue))
+import Forms
+
 
 chatForm :: Form
-chatForm FormClose _ = pure FormClose
-
-chatForm (FormErr msg) appData  = do
-  size <- tSize
-  mapM_ putStr $ clearAll size
-  printError msg
-  chatForm FormNew appData
-
-chatForm FormClear appData  = do
-  size <- tSize
-  mapM_ putStr $ clearAll size
-  chatForm FormNew appData
+chatForm FormClose            _ = defFormClose
+chatForm fd@(FormErr _) appData = defFormErr   chatForm fd appData
+chatForm FormClear      appData = defFormClear chatForm appData
 
 chatForm FormNew appData@(_, user, chatBuf) = do
   (y,x) <- tSize
 
   putStr toMain
-  printMain True $ titleText "[CHAT]"
-  printMain True $ successText "Online : 1"
-  printMain True $ ""
-  printMain True $ "Info:"
-  printMain True $ "Id:   "   <> (show $ uid user)
-  printMain True $ "User: " <> ulogin user
-  printMain True $ "Age:  "  <> (show $ uage user)
-  printMain True $ "Bio:  "  <> ubio user
+  putStr . inMain True $ titleText "[CHAT]"
+  putStr . inMain True $ successText "Online : 1"
+  putStr . inMain True $ ""
+  putStr . inMain True $ "Info:"
+  putStr . inMain True $ "Id:   "   <> (show $ uid user)
+  putStr . inMain True $ "User: " <> ulogin user
+  putStr . inMain True $ "Age:  "  <> (show $ uage user)
+  putStr . inMain True $ "Bio:  "  <> ubio user
 
   mapM_ putStr $ clearSide (y,x)
   putStr toSide
 
   let
     winChatBuf = (reverse . take (y - 6) . reverse) chatBuf
-  mapM_ (printSide True) winChatBuf
+  mapM_ (putStr . inSide True) winChatBuf
 
-  printSideDown "Message (or :q): "
+  putStr . inSideDown (y,x) $ "Message (or :q): "
 
   messageData <- getLine
 
   -- Remove entereted maessage/command
-  printSideDown $ replicate (x - 36) ' '
+  putStr . inSideDown (y,x) $ replicate (x - 36) ' '
 
   if messageData == ":q" then pure FormClose
   else do

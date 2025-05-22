@@ -12,10 +12,12 @@ library
   hs-source-dirs:
       src
   exposed-modules:
-      Config
-      User
-      Animations
       ScreenControl
+      Animations
+      User
+      Config
+
+      Forms
       Forms.Menu
       Forms.Register
       Forms.Login

@@ -1,33 +1,26 @@
 module Forms.Register (registerForm) where
 
 import Data.Char
+import Database.SQLite.Simple
+
 
 import User
 import Config
 import ScreenControl
 
+import Forms
 import Forms.Chat
-import Database.SQLite.Simple
 
 registerForm :: Form
-registerForm FormClose _ = pure FormClose
-
-registerForm (FormErr msg) appData  = do
-  size <- tSize
-  mapM_ putStr $ clearAll size
-  printError msg
-  registerForm FormNew appData
-
-registerForm FormClear appData  = do
-  size <- tSize
-  mapM_ putStr $ clearAll size
-  registerForm FormNew appData
+registerForm FormClose            _ = defFormClose
+registerForm fd@(FormErr _) appData = defFormErr   registerForm fd appData
+registerForm FormClear      appData = defFormClear registerForm appData
 
 registerForm FormNew appData@(accountList, _, _) = do
   putStr toMain
-  printMain True $ titleText "[REGISTRATION]"
+  putStr . inMain True $ titleText "[REGISTRATION]"
 
-  printMain False "Login (or :q): "
+  putStr . inMain False $ "Login (or :q): "
   login <- getLine
 
   case getLoginErrs accountList login of
@@ -38,7 +31,7 @@ registerForm FormNew appData@(accountList, _, _) = do
 registerFormAge :: String ->  Form
 registerFormAge login _ appData@(accountList, _, _) = do
 
-  printMain False "Age: "
+  putStr . inMain False $  "Age: "
   age <- getLine
 
   case getAgeErrs age of
