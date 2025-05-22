@@ -10,13 +10,13 @@ import User
 import Config
 import ScreenControl
 
-import Forms
+import Forms.Default
 
 
 chatForm :: Form
-chatForm FormClose            _ = defFormClose
-chatForm fd@(FormErr _) appData = defFormErr   chatForm fd appData
-chatForm FormClear      appData = defFormClear chatForm appData
+chatForm FormClose           _ = defFormClose
+chatForm (FormErr msg) appData = defFormErr   chatForm appData msg
+chatForm FormClear     appData = defFormClear chatForm appData
 
 chatForm FormNew appData@(_, user, chatBuf) = do
   (y,x) <- tSize

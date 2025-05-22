@@ -8,18 +8,19 @@ import Config
 import ScreenControl
 import Animations
 
-import Forms
+import Forms.Default
+
+import Forms.Games
 import Forms.Register
 import Forms.Login
-import Forms.Games
 
 
 type MenuElement = (Int, (String, IO FormType))
 
 menuForm :: Int -> Form
-menuForm _ FormClose            _ = defFormClose
-menuForm n fd@(FormErr _) appData = defFormErr   (menuForm n) fd appData
-menuForm n FormClear      appData = defFormClear (menuForm n) appData
+menuForm _ FormClose           _ = defFormClose
+menuForm n (FormErr msg) appData = defFormErr   (menuForm n) appData msg
+menuForm n FormClear     appData = defFormClear (menuForm n) appData
 
 menuForm (-1) cls appData = menuForm 0 cls appData
 menuForm 4    cls appData = menuForm 3 cls appData
@@ -33,17 +34,17 @@ menuForm selectedIndex FormNew appData        = do
     runFormL = runForm appData loginForm
     runFormG = runForm appData gamesForm
 
-    menu_options = [
+    menuOptions = [
         (centerMain "Register (R)", runFormR)
       , (centerMain "Login    (L)", runFormL)
       , (centerMain "Games    (G)", runFormG)
       , (centerMain "Qite     (Q)", pure FormClose)
       ]
 
-    menu_list = zip [0..] menu_options
+    menuList = zip [0..] menuOptions
 
   -- Show Menu:
-  mapM_ (printMenuSelected selectedIndex) menu_list
+  mapM_ (printMenuSelected selectedIndex) menuList
   putStr toError
 
   controlKey <- waitingKey menuAnim
@@ -52,7 +53,7 @@ menuForm selectedIndex FormNew appData        = do
     -- Menu control
     "\ESC[A" -> menuForm (selectedIndex - 1) FormClear appData
     "\ESC[B" -> menuForm (selectedIndex + 1) FormClear appData
-    "\n"     -> snd $ menu_options !! selectedIndex
+    "\n"     -> snd $ menuOptions !! selectedIndex
 
     -- Hotkeys
     "R"      -> runFormR
@@ -60,7 +61,7 @@ menuForm selectedIndex FormNew appData        = do
     "G"      -> runFormG
     "Q"      -> pure FormClose
 
-    d        -> menuForm selectedIndex (FormErr $ "No command" <> show d) appData
+    key      -> menuForm selectedIndex (FormErr $ "No command" <> show key) appData
 
 
 

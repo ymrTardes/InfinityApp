@@ -4,12 +4,13 @@ import Config
 import Animations
 import ScreenControl
 
-import Forms
+import Forms.Default
+
 
 gamesForm :: Form
-gamesForm FormClose            _ = defFormClose
-gamesForm fd@(FormErr _) appData = defFormErr   gamesForm fd appData
-gamesForm FormClear      appData = defFormClear gamesForm appData
+gamesForm FormClose           _ = defFormClose
+gamesForm (FormErr msg) appData = defFormErr   gamesForm appData msg
+gamesForm FormClear     appData = defFormClear gamesForm appData
 
 gamesForm FormNew _ = do
   putStr toMain

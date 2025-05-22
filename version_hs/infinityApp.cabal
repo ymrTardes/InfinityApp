@@ -17,11 +17,12 @@ library
       User
       Config
 
-      Forms
+      Forms.Default
+
       Forms.Menu
+      Forms.Games
       Forms.Register
       Forms.Login
-      Forms.Games
       Forms.Chat
 
   default-extensions:

@@ -8,13 +8,14 @@ import User
 import Config
 import ScreenControl
 
-import Forms
+import Forms.Default
 import Forms.Chat
 
+
 registerForm :: Form
-registerForm FormClose            _ = defFormClose
-registerForm fd@(FormErr _) appData = defFormErr   registerForm fd appData
-registerForm FormClear      appData = defFormClear registerForm appData
+registerForm FormClose           _ = defFormClose
+registerForm (FormErr msg) appData = defFormErr   registerForm appData msg
+registerForm FormClear     appData = defFormClear registerForm appData
 
 registerForm FormNew appData@(accountList, _, _) = do
   putStr toMain

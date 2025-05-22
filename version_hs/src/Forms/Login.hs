@@ -4,13 +4,14 @@ import User
 import Config
 import ScreenControl
 
-import Forms
+import Forms.Default
 import Forms.Chat
 
+
 loginForm :: Form
-loginForm FormClose            _ = defFormClose
-loginForm fd@(FormErr _) appData = defFormErr   loginForm fd appData
-loginForm FormClear      appData = defFormClear loginForm appData
+loginForm FormClose           _ = defFormClose
+loginForm (FormErr msg) appData = defFormErr   loginForm appData msg
+loginForm FormClear     appData = defFormClear loginForm appData
 
 loginForm FormNew (accountList, _, _) = do
   putStr toMain
