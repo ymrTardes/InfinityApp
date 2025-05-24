@@ -8,11 +8,11 @@ import Forms.Chat
 
 
 loginForm :: Form
-loginForm FormClose           _ = defFormClose
-loginForm (FormErr msg) appData = defFormErr   loginForm appData msg
-loginForm FormClear     appData = defFormClear loginForm appData
+loginForm (FormClose  ,       _) = defFormClose
+loginForm (FormErr msg, appData) = defFormErr   loginForm appData msg
+loginForm (FormClear  , appData) = defFormClear loginForm appData
 
-loginForm FormNew (accountList, _, _) = do
+loginForm (FormNew, appData@(accountList, _, _)) = do
   putStr toMain
   putStr . inMain True $ titleText "[LOGIN]"
 
@@ -23,10 +23,10 @@ loginForm FormNew (accountList, _, _) = do
   let
     findUser = filter (\x -> login == ulogin x) accountList
 
-  if login == ":q" then pure $ FormClear
+  if login == ":q" then pure (FormClear, appData)
 
   else if findUser == [] then do
-    pure $ FormErr "No account"
+    pure ((FormErr "No account"), appData)
 
   else do
-    chatForm FormClear $ (accountList, findUser !! 0, [])
+    chatForm (FormClear, (accountList, findUser !! 0, []))

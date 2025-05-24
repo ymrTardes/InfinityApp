@@ -2,10 +2,10 @@ module Forms.Default (
     MenuElement
   , AppData
   , Form
+  , FormData
   , MenuForm
   , FormType(..)
   , printMenuSelected
-  , runForm
 
   , defFormClose
   , defFormErr
@@ -19,21 +19,16 @@ import System.Console.ANSI
 import User
 
 
-type Form = FormType -> AppData -> IO FormType
+type FormData = (FormType, AppData)
+type Form = FormData -> IO FormData
 type MenuForm = Int -> Form
-
-type AppData = ([User], User, [String])
 
 data FormType = FormNew | FormClear | FormErr String | FormClose
   deriving (Eq, Show)
 
-type MenuElement = (Int, (String, IO FormType))
+type AppData = ([User], User, [String])
 
-
-runForm :: MenuForm -> AppData -> Form -> IO FormType
-runForm mform appData form = do
-  formType <- form FormClear appData
-  mform 0 formType appData 
+type MenuElement = (Int, (String, IO FormData))
 
 printMenuSelected :: Int -> MenuElement -> IO ()
 printMenuSelected n (i, (s, _)) = do
@@ -42,18 +37,18 @@ printMenuSelected n (i, (s, _)) = do
     else s
 
 
-defFormClose :: IO FormType
-defFormClose = pure FormClose
+defFormClose :: IO FormData
+defFormClose = pure (FormClose, ([], User 0 "" 0 "", []))
 
-defFormErr :: Form -> AppData -> String -> IO FormType
+defFormErr :: Form -> AppData -> String -> IO FormData
 defFormErr form appData msg = do
   size <- tSize
   mapM_ putStr $ clearAll size
   putStr $ inError msg
-  form FormNew appData
+  form (FormNew, appData)
 
-defFormClear :: Form -> AppData -> IO FormType
+defFormClear :: Form -> AppData -> IO FormData
 defFormClear form appData = do
   size <- tSize
   mapM_ putStr $ clearAll size
-  form FormNew appData
+  form (FormNew, appData)

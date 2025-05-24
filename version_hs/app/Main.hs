@@ -31,5 +31,5 @@ main = do
     useNormalScreenBuffer
     $ do
       drawAll
-      _ <- menuForm 0 FormClear appData
+      _ <- menuForm 0 (FormClear, appData)
       pure ()

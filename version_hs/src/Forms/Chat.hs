@@ -14,22 +14,15 @@ import Forms.Default
 
 
 chatForm :: Form
-chatForm FormClose           _ = defFormClose
-chatForm (FormErr msg) appData = defFormErr   chatForm appData msg
-chatForm FormClear     appData = defFormClear chatForm appData
+chatForm (FormClose  ,       _) = defFormClose
+chatForm (FormErr msg, appData) = defFormErr   chatForm appData msg
+chatForm (FormClear  , appData) = defFormClear chatForm appData
 
-chatForm FormNew appData@(_, user, chatBuf) = do
+chatForm (FormNew, appData@(_, user, chatBuf)) = do
   (y,x) <- tSize
 
   putStr toMain
-  putStr . inMain True $ titleText "[CHAT]"
-  putStr . inMain True $ successText "Online : 1"
-  putStr . inMain True $ ""
-  putStr . inMain True $ "Info:"
-  putStr . inMain True $ "Id:   "   <> (show $ uid user)
-  putStr . inMain True $ "User: " <> ulogin user
-  putStr . inMain True $ "Age:  "  <> (show $ uage user)
-  putStr . inMain True $ "Bio:  "  <> ubio user
+  printUserInfo user
 
   mapM_ putStr $ clearSide (y,x)
   putStr toSide
@@ -45,7 +38,7 @@ chatForm FormNew appData@(_, user, chatBuf) = do
   -- Remove entereted maessage/command
   putStr . inSideDown (y,x) $ replicate (x - 36) ' '
 
-  if messageData == ":q" then pure FormClose
+  if messageData == ":q" then pure (FormClose, appData)
   else do
     let
       appData'@(_,user',_) = commandRender (words messageData) appData
@@ -58,7 +51,19 @@ chatForm FormNew appData@(_, user, chatBuf) = do
     else
       pure ()
 
-    chatForm FormNew appData'
+    chatForm (FormNew, appData')
+
+
+printUserInfo :: User -> IO ()
+printUserInfo user = do
+  putStr . inMain True $ titleText "[CHAT]"
+  putStr . inMain True $ successText "Online : 1"
+  putStr . inMain True $ ""
+  putStr . inMain True $ "Info:"
+  putStr . inMain True $ "Id:   "   <> (show $ uid user)
+  putStr . inMain True $ "User: " <> ulogin user
+  putStr . inMain True $ "Age:  "  <> (show $ uage user)
+  putStr . inMain True $ "Bio:  "  <> ubio user
 
 
 commandRender :: [String] -> AppData -> AppData
