@@ -1,9 +1,45 @@
 module Forms.Default (
-  defFormClose, defFormErr, defFormClear
+    MenuElement
+  , AppData
+  , Form
+  , MenuForm
+  , FormType(..)
+  , printMenuSelected
+  , runForm
+
+  , defFormClose
+  , defFormErr
+  , defFormClear
 ) where
 
-import Config
 import ScreenControl
+import System.Console.ANSI
+
+
+import User
+
+
+type Form = FormType -> AppData -> IO FormType
+type MenuForm = Int -> Form
+
+type AppData = ([User], User, [String])
+
+data FormType = FormNew | FormClear | FormErr String | FormClose
+  deriving (Eq, Show)
+
+type MenuElement = (Int, (String, IO FormType))
+
+
+runForm :: MenuForm -> AppData -> Form -> IO FormType
+runForm mform appData form = do
+  formType <- form FormClear appData
+  mform 0 formType appData 
+
+printMenuSelected :: Int -> MenuElement -> IO ()
+printMenuSelected n (i, (s, _)) = do
+  putStr . inMain True $
+    if i == n then colorPrint Background Blue s
+    else s
 
 
 defFormClose :: IO FormType

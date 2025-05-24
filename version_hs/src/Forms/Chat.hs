@@ -62,9 +62,7 @@ chatForm FormNew appData@(_, user, chatBuf) = do
 
 
 commandRender :: [String] -> AppData -> AppData
-
 commandRender [] appData = appData
-
 commandRender (":b":args) (accountList, user, chatBuf) = (accountList', user', chatBuf')
   where
     user' = user {ubio = unwords args}
@@ -121,7 +119,6 @@ doCalc (a:b:_) = do
   guard $ and $ map (isDigit) a
   guard $ and $ map (isDigit) b
   pure $ show @Int $ read a + read b
-
 
 doList :: [User] -> [String] -> [User]
 doList accountList [] = accountList

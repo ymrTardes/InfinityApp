@@ -10,6 +10,8 @@ import User
 import Config
 import ScreenControl (drawAll)
 
+import Forms.Default
+
 import Forms.Menu
 
 main :: IO ()
@@ -21,10 +23,13 @@ main = do
   users <- withConnection dbPath $ \conn -> do
     query_ @User conn "select * from users"
 
+  let
+    appData = (users, defUser, [])
+
   bracket_
     useAlternateScreenBuffer
     useNormalScreenBuffer
     $ do
       drawAll
-      _ <- menuForm 0 FormClear (users, defUser, [])
+      _ <- menuForm 0 FormClear appData
       pure ()

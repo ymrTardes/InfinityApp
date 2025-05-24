@@ -1,7 +1,6 @@
 module Forms.Login (loginForm) where
 
 import User
-import Config
 import ScreenControl
 
 import Forms.Default

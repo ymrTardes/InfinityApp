@@ -1,6 +1,8 @@
 module ScreenControl (
+  Animation
+
   -- IO
-    waitingKey
+  , getKeyAnim, getKey
   , tSize, drawAll
 
   -- Strings
@@ -22,6 +24,8 @@ import Data.Time.Clock.System
 import Data.Maybe (fromMaybe)
 
 
+type Animation = SystemTime -> [String]
+
 tSize :: IO (Int, Int)
 tSize = do
   size <- getTerminalSize
@@ -38,38 +42,43 @@ drawAll = do
   putStrLn $ concat ["+", replicate (x - 2) '-', "+"]
   putStrLn $ concat ["|", replicate (x - 2) ' ', "|"]
   putStrLn $ concat ["+", replicate (x - 2) '-', "+"]
+
   replicateM_ (y - 5) $
     putStrLn $ concat ["|", replicate 32 ' ' , "|" ,  replicate (x - 35) ' ', "|"]
+
   putStrLn $ concat ["+", replicate (x - 2) '-', "+"]
 
   showCursor
 
-waitingKey :: (SystemTime -> [String]) -> IO String
-waitingKey anim = do
+getKeyAnim :: Animation -> IO String
+getKeyAnim anim = do
   hideCursor
   hSetBuffering stdin NoBuffering
+
   res <- waitingKey' anim
+
   hSetBuffering stdin LineBuffering
   showCursor
+
   pure res
 
-waitingKey' :: (SystemTime -> [String]) -> IO String
+waitingKey' :: Animation -> IO String
 waitingKey' anim = do
   keyDown <- hReady stdin
 
-  if keyDown then do
-    char <- getChar
-    getMore [char]
-
+  if keyDown then getKey
   else do
     time <- getSystemTime
-
     -- Run animation
     threadDelay $ 5 * 1000
     mapM_ (putStr . inSide True) $ anim time
-
     setCursorPosition 1 2
     waitingKey' anim
+
+getKey :: IO String
+getKey = do
+  char <- getChar
+  getMore [char]
 
 getMore :: String -> IO String
 getMore chars = do
@@ -130,7 +139,6 @@ clearError :: (Int, Int) -> [String]
 clearError (_, x) = toError : [cls]
   where
     cls = replicate (x - 4) ' '
-
 
 clearMain :: (Int, Int) -> [String]
 clearMain (y, _) = toMain : cls
