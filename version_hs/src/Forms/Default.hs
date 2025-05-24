@@ -19,14 +19,14 @@ import System.Console.ANSI
 import User
 
 
-type FormData = (FormType, AppData)
-type Form = FormData -> IO FormData
-type MenuForm = Int -> Form
-
 data FormType = FormNew | FormClear | FormErr String | FormClose
   deriving (Eq, Show)
 
 type AppData = ([User], User, [String])
+
+type FormData = (FormType, AppData)
+type Form     = FormData -> IO FormData
+type MenuForm = Int -> Form
 
 type MenuElement = (Int, (String, IO FormData))
 
