@@ -1,10 +1,10 @@
 module Forms.Default (
     MenuElement
-  , AppData
-  , Form
-  , FormData
-  , MenuForm
   , FormType(..)
+  , AppData(..)
+  , FormData
+  , Form
+  , MenuForm
   , printMenuSelected
 
   , defFormClose
@@ -22,7 +22,11 @@ import User
 data FormType = FormNew | FormClear | FormErr String | FormClose
   deriving (Eq, Show)
 
-type AppData = ([User], User, [String])
+data AppData = AppData {
+    appUsersList :: [User]
+  , appUser :: User
+  , appChatHistory :: [String]
+  }
 
 type FormData = (FormType, AppData)
 type Form     = FormData -> IO FormData
@@ -38,7 +42,7 @@ printMenuSelected n (i, (s, _)) = do
 
 
 defFormClose :: IO FormData
-defFormClose = pure (FormClose, ([], User 0 "" 0 "", []))
+defFormClose = pure (FormClose, AppData [] defUser [])
 
 defFormErr :: Form -> AppData -> String -> IO FormData
 defFormErr form appData msg = do

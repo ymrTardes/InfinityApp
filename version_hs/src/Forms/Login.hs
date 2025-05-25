@@ -12,7 +12,7 @@ loginForm (FormClose  ,       _) = defFormClose
 loginForm (FormErr msg, appData) = defFormErr   loginForm appData msg
 loginForm (FormClear  , appData) = defFormClear loginForm appData
 
-loginForm (FormNew, appData@(accountList, _, _)) = do
+loginForm (FormNew, appData) = do
   putStr toMain
   putStr . inMain True $ titleText "[LOGIN]"
 
@@ -21,7 +21,7 @@ loginForm (FormNew, appData@(accountList, _, _)) = do
   login <- getLine
 
   let
-    findUser = filter (\x -> login == ulogin x) accountList
+    findUser = filter (\x -> login == ulogin x) $ appUsersList appData
 
   if login == ":q" then pure (FormClear, appData)
 
@@ -29,4 +29,4 @@ loginForm (FormNew, appData@(accountList, _, _)) = do
     pure ((FormErr "No account"), appData)
 
   else do
-    chatForm (FormClear, (accountList, findUser !! 0, []))
+    chatForm (FormClear, AppData (appUsersList appData) (findUser !! 0) [])

@@ -17,20 +17,20 @@ registerForm (FormClose  ,       _) = defFormClose
 registerForm (FormErr msg, appData) = defFormErr   registerForm appData msg
 registerForm (FormClear  , appData) = defFormClear registerForm appData
 
-registerForm (FormNew, appData@(accountList, _, _)) = do
+registerForm (FormNew, appData) = do
   putStr toMain
   putStr . inMain True $ titleText "[REGISTRATION]"
 
   putStr . inMain False $ "Login (or :q): "
   login <- getLine
 
-  case getLoginErrs accountList login of
+  case getLoginErrs (appUsersList appData) login of
     Just "-" -> pure (FormClear, appData)
     Just err -> registerForm ((FormErr err), appData)
     _ -> registerFormAge login (FormNew, appData)
 
 registerFormAge :: String ->  Form
-registerFormAge login (_, appData@(accountList, _, _)) = do
+registerFormAge login (_, appData) = do
 
   putStr . inMain False $  "Age: "
   age <- getLine
@@ -46,7 +46,7 @@ registerFormAge login (_, appData@(accountList, _, _)) = do
 
       let usr = usr' {uid = (fromIntegral rowId)}
 
-      chatForm (FormClear, (accountList <> [usr], usr, []))
+      chatForm (FormClear, AppData (appUsersList appData <> [usr]) usr [])
 
 
 

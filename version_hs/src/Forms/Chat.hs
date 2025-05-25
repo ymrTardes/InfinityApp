@@ -18,17 +18,17 @@ chatForm (FormClose  ,       _) = defFormClose
 chatForm (FormErr msg, appData) = defFormErr   chatForm appData msg
 chatForm (FormClear  , appData) = defFormClear chatForm appData
 
-chatForm (FormNew, appData@(_, user, chatBuf)) = do
+chatForm (FormNew, appData) = do
   (y,x) <- tSize
 
   putStr toMain
-  printUserInfo user
+  printUserInfo $ appUser appData
 
   mapM_ putStr $ clearSide (y,x)
   putStr toSide
 
   let
-    winChatBuf = (reverse . take (y - 6) . reverse) chatBuf
+    winChatBuf = (reverse . take (y - 6) . reverse) $ appChatHistory appData
   mapM_ (putStr . inSide True) winChatBuf
 
   putStr . inSideDown (y,x) $ "Message (or :q): "
@@ -41,17 +41,45 @@ chatForm (FormNew, appData@(_, user, chatBuf)) = do
   if messageData == ":q" then pure (FormClose, appData)
   else do
     let
-      appData'@(_,user',_) = commandRender (words messageData) appData
+      appData' = commandRender (words messageData) appData
 
-    if user /= user' then do
+    if (appUser appData) /= (appUser appData') then do
       withConnection dbPath $ \conn -> do
-        execute conn "update users set bio = ? where id = ?"  $ (ubio user', uid user)
+        execute conn "update users set bio = ? where id = ?"
+          (ubio (appUser appData'), uid (appUser appData))
 
       mapM_ putStr $ clearMain (y,x)
     else
       pure ()
 
     chatForm (FormNew, appData')
+
+
+commandRender :: [String] -> AppData -> AppData
+commandRender [] appData = appData
+commandRender (":b":args) (AppData accountList user chatBuf) =
+    AppData accountList' user' chatBuf'
+  where
+    user' = user {ubio = unwords args}
+    bacc  = break (==user) accountList
+    accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
+    chatBuf' = chatBuf <> [successText "Bio updated"]
+commandRender (cmd:args)  (AppData accountList user chatBuf) =
+    AppData accountList user chatBuf'
+  where
+    listRes = doList accountList args
+    chatBuf' = case cmd of
+      -- Info
+      ":h" -> chatBuf <> showHelp
+      ":l" -> chatBuf <> [successText ("Complited search: " <> show (length listRes))] <> (map show listRes)
+      ":i" -> chatBuf <> [show user]
+
+      -- Actions
+      ":r" -> chatBuf <> [runAction user (doReverse args) "R" "Command error :r <str>"]
+      ":c" -> chatBuf <> [runAction user (doCalc args)    "C" "Command error :c <num> <num>"]
+
+      -- Just message
+      _    -> chatBuf <> [colorPrint Foreground Blue (ulogin user ++ "> ") ++ unwords (cmd:args)]
 
 
 printUserInfo :: User -> IO ()
@@ -64,33 +92,6 @@ printUserInfo user = do
   putStr . inMain True $ "User: " <> ulogin user
   putStr . inMain True $ "Age:  "  <> (show $ uage user)
   putStr . inMain True $ "Bio:  "  <> ubio user
-
-
-commandRender :: [String] -> AppData -> AppData
-commandRender [] appData = appData
-commandRender (":b":args) (accountList, user, chatBuf) = (accountList', user', chatBuf')
-  where
-    user' = user {ubio = unwords args}
-    bacc  = break (==user) accountList
-    accountList' = fst bacc <> [user'] <> (drop 1 $ snd bacc)
-    chatBuf' = chatBuf <> [successText "Bio updated"]
-
-commandRender (cmd:args) (accountList, user, chatBuf) = (accountList, user, chatBuf')
-  where
-    res = doList accountList args
-    res' = map show res
-    chatBuf' = case cmd of
-      -- Info
-      ":h" -> chatBuf <> showHelp
-      ":l" -> chatBuf <> [successText ("Complited search: " <> show (length res))] <> res'
-      ":i" -> chatBuf <> [show user]
-
-      -- Actions
-      ":r" -> chatBuf <> [runAction user (doReverse args) "R" "Command error :r <str>"]
-      ":c" -> chatBuf <> [runAction user (doCalc args)    "C" "Command error :c <num> <num>"]
-
-      -- Just message
-      _    -> chatBuf <> [colorPrint Foreground Blue (ulogin user ++ "> ") ++ unwords (cmd:args)]
 
 
 showHelp :: [String]

@@ -15,7 +15,7 @@ gamesForm _ (FormClose  ,       _) = defFormClose
 gamesForm n (FormErr msg, appData) = defFormErr   (gamesForm n) appData msg
 gamesForm n (FormClear  , appData) = defFormClear (gamesForm n) appData
 
-gamesForm n (FormNew, appData@(_, user, _)) = do
+gamesForm n (FormNew, appData) = do
   putStr toMain
   putStr . inMain True $ titleText "[Games]"
 
@@ -27,10 +27,10 @@ gamesForm n (FormNew, appData@(_, user, _)) = do
 
   mapM_ (printMenuSelected n) menuOptions
 
-  putStr . inMain True $ "Id:   "  <> (show $ uid user)
-  putStr . inMain True $ "User: "  <> ulogin user
-  putStr . inMain True $ "Age:  "  <> (show $ uage user)
-  putStr . inMain True $ "Bio:  "  <> ubio user
+  putStr . inMain True $ "Id:   "  <> (show $  uid $ appUser appData)
+  putStr . inMain True $ "User: "  <> (     ulogin $ appUser appData)
+  putStr . inMain True $ "Age:  "  <> (show $ uage $ appUser appData)
+  putStr . inMain True $ "Bio:  "  <> (       ubio $ appUser appData)
 
   putStr toError
   controlKey <- getKeyAnim gamesAnim
@@ -50,12 +50,12 @@ game1Form (FormClose  ,       _) = defFormClose
 game1Form (FormErr msg, appData) = defFormErr   game1Form appData msg
 game1Form (FormClear  , appData) = defFormClear game1Form appData
 
-game1Form (FormNew, (a, _, b)) = do
+game1Form (FormNew, appData) = do
   putStr toSide
 
   msg <- getLine
 
   let
-    appData' = (a, User 0 msg 666 "In Game1", b)
+    appData' = appData {appUser = User 0 msg 666 "In Game1"}
 
   pure ((FormErr msg), appData')

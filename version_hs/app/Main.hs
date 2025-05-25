@@ -24,7 +24,7 @@ main = do
     query_ @User conn "select * from users"
 
   let
-    appData = (users, defUser, [])
+    appData = AppData users defUser []
 
   bracket_
     useAlternateScreenBuffer
