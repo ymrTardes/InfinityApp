@@ -5,7 +5,8 @@ module Forms.Default (
   , FormData
   , Form
   , MenuForm
-  , printMenuSelected
+
+  , colorMenuSelected
 
   , defFormClose
   , defFormErr
@@ -34,11 +35,11 @@ type MenuForm = Int -> Form
 
 type MenuElement = (Int, (String, IO FormData))
 
-printMenuSelected :: Int -> MenuElement -> IO ()
-printMenuSelected n (i, (s, _)) = do
-  putStr . inMain True $
-    if i == n then colorPrint Background Blue s
-    else s
+colorMenuSelected :: Int -> MenuElement -> String
+colorMenuSelected n (i, (s, _)) = inMain True $
+  if i == n then
+    colorPrint Background Blue s
+  else s
 
 
 defFormClose :: IO FormData

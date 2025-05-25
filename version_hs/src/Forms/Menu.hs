@@ -33,7 +33,7 @@ menuForm selectedIndex (FormNew, appData) = do
       ]
 
   -- Show Menu:
-  mapM_ (printMenuSelected selectedIndex) menuOptions
+  mapM_ (putStr . colorMenuSelected selectedIndex) menuOptions
   putStr toError
 
   controlKey <- getKeyAnim menuAnim

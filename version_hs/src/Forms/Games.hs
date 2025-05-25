@@ -25,7 +25,7 @@ gamesForm n (FormNew, appData) = do
       , (centerMain "Quite", pure (FormClear, appData))
       ]
 
-  mapM_ (printMenuSelected n) menuOptions
+  mapM_ (putStr . colorMenuSelected n) menuOptions
 
   putStr . inMain True $ "Id:   "  <> (show $  uid $ appUser appData)
   putStr . inMain True $ "User: "  <> (     ulogin $ appUser appData)
