@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -ddump-splices #-}
+
 module Forms.Login (loginForm) where
 
 import User
@@ -7,16 +9,19 @@ import Forms.Default
 import Forms.Chat
 
 
-loginForm :: Form
-loginForm (FormClose  ,       _) = defFormClose
-loginForm (FormErr msg, appData) = defFormErr   loginForm appData msg
-loginForm (FormClear  , appData) = defFormClear loginForm appData
+-- loginForm :: Form
+-- loginForm (FormClose  ,       _) = defFormClose
+-- loginForm (FormErr msg, appData) = defFormErr   loginForm appData msg
+-- loginForm (FormClear  , appData) = defFormClear loginForm appData
+-- loginForm (FormNew    , appData) = loginForm' (FormNew, appData)
+$(makeForm "loginForm")
 
-loginForm (FormNew, appData) = do
+loginForm' :: Form
+loginForm' (_, appData) = do
   putStr toMain
   putStr . inMain True $ titleText "[LOGIN]"
 
-  putStr . inMain False $ "Login (or :q): "
+  putStr . inMain False $ "Login 2 (or :q): "
 
   login <- getLine
 

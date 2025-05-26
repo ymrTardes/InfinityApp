@@ -2,7 +2,6 @@ module Forms.Menu (menuForm) where
 
 import Data.Char
 
-
 import ScreenControl
 import Animations
 
@@ -11,6 +10,7 @@ import Forms.Default
 import Forms.Games
 import Forms.Register
 import Forms.Login
+
 
 menuForm :: MenuForm
 menuForm _ (FormClose  ,       _) = defFormClose

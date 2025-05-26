@@ -28,10 +28,12 @@ library
   default-extensions:
       TypeApplications
       OverloadedStrings
+      TemplateHaskell
 
   build-depends:
       base >=4.7 && <5
     , ansi-terminal
+    , template-haskell
     , sqlite-simple
     , time
 
@@ -58,10 +60,12 @@ executable infinityApp-exe
     default-extensions:
       TypeApplications
       OverloadedStrings
+      TemplateHaskell
 
     build-depends:
         base ^>=4.20.0.0
       , ansi-terminal
+      , template-haskell
       , sqlite-simple
       , time
 
